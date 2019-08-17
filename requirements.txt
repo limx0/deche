@@ -1,0 +1,7 @@
+fsspec
+s3fs
+pytest
+docker
+minio
+astor
+cloudpickle

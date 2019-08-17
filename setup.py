@@ -7,6 +7,7 @@ projects managed with cirrus.
 
 """
 import setuptools
+
 try:
     import ConfigParser as configparser
 except ImportError:
@@ -42,24 +43,30 @@ requirements_file = open(requirements_filename)
 # Furthermore, you can't use line continuations with the following:
 requirements = requirements_file.read().strip().split('\n')
 
-setup_args ={
+extras_require = {
+    's3': ['s3fs'],
+}
+
+extras_require['complete'] = sum(extras_require.values(), list())
+
+setup_args = {
     'description': parser.get('package', 'description'),
     'include_package_data': True,
     'install_requires': requirements,
+    'extras_require': extras_require,
     'name': parser.get('package', 'name'),
     'version': parser.get('package', 'version'),
     'url': get_default(parser, 'package', 'url', None),
-    'author': get_default(parser, 'package','author', None),
-    'author_email': get_default(parser, 'package','author_email', None),
-    'extras_require': {}
+    'author': get_default(parser, 'package', 'author', None),
+    'author_email': get_default(parser, 'package', 'author_email', None),
 }
 
 if parser.has_section('console_scripts'):
     scripts = [
-        '{0} = {1}'.format(opt,  parser.get('console_scripts', opt))
+        '{0} = {1}'.format(opt, parser.get('console_scripts', opt))
         for opt in parser.options('console_scripts')
     ]
-    setup_args['entry_points'] = {'console_scripts' : scripts}
+    setup_args['entry_points'] = {'console_scripts': scripts}
 
 if parser.has_section('extras_require'):
     for opt in parser.options('extras_require'):
@@ -68,9 +75,8 @@ if parser.has_section('extras_require'):
         ]
         setup_args['extras_require'][opt] = extras
 
-
 if src_dir:
     setup_args['packages'] = setuptools.find_packages(src_dir, exclude=excl_dirs)
     setup_args['provides'] = setuptools.find_packages(src_dir)
-    setup_args['package_dir'] = {'':src_dir}
+    setup_args['package_dir'] = {'': src_dir}
 setuptools.setup(**setup_args)
