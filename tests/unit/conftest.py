@@ -1,19 +1,15 @@
-from pathlib import Path
-import os
+import shutil
 
 import pytest
 
 from deche.cache import Cache
-
-TEST_FOLDER = Path.cwd().joinpath('resources')
+from deche.test_utils import TEST_FOLDER
 
 
 @pytest.fixture(scope='function', autouse=True)
 def cleanup(path):
-    for f in TEST_FOLDER.glob('**/*'):
-        os.remove(str(f))
     if TEST_FOLDER.exists():
-        TEST_FOLDER.rmdir()
+        shutil.rmtree(TEST_FOLDER)
     yield
     TEST_FOLDER.mkdir(exist_ok=True)
 

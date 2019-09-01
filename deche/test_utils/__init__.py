@@ -1,4 +1,8 @@
+from pathlib import Path
+
 from deche.cache import cache
+
+TEST_FOLDER = Path.absolute(Path(__file__)).parent.joinpath("resources")
 
 
 class Class:
@@ -6,12 +10,12 @@ class Class:
         self.a = a
         self.b = b
 
-    @cache('test')
+    @cache(TEST_FOLDER)
     def c(self):
         return self.a + self.b
 
 
-@cache('test')
+@cache(prefix=str(TEST_FOLDER))
 def func(a, b, **kwargs):
     return a + b
 

@@ -123,8 +123,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Pycharm
-.idea
-
-# Testing
-tests/unit/resources
+.idea/
+deche/test_utils/resources/
