@@ -1,18 +1,17 @@
 import functools
 import hashlib
 from dataclasses import dataclass
-from typing import Callable
 
 from cloudpickle import cloudpickle
-from fsspec import AbstractFileSystem
-from fsspec.implementations.local import LocalFileSystem
-
 from deche.inspection import args_kwargs_to_kwargs
 from deche.util import ensure_path
+from fsspec import AbstractFileSystem
+from fsspec.implementations.local import LocalFileSystem
+from typing import Callable
 
-
+# Remove read func, write bytes to BytesIO then write to fs
 # TODO - Use fsspec to build a more generic file interface
-# TODO - Add optional expiry time, now - created
+# TODO - Add optional expiry time, now - created. With option to overwrite/append (cache every 5 days)
 # TODO - Tests for class methods, watch out for self cache invalidation, maybe ast the variables used in func?
 
 
@@ -23,7 +22,7 @@ class Cache:
     input_serializer: Callable = cloudpickle.dumps
     input_deserializer: Callable = cloudpickle.loads
     output_serializer: Callable = cloudpickle.dumps
-    output_deserializer: Callable = cloudpickle.dumps
+    output_deserializer: Callable = cloudpickle.loads
 
     fs: AbstractFileSystem = LocalFileSystem()
     write_func: Callable = None
@@ -37,9 +36,7 @@ class Cache:
     def bytes_to_key(value: bytes):
         return hashlib.sha256(value).hexdigest()
 
-    def tokenize(
-            self, obj: object, serializer: Callable = cloudpickle.dumps
-    ) -> (str, bytes):
+    def tokenize(self, obj: object, serializer: Callable = cloudpickle.dumps) -> (str, bytes):
         value = serializer(obj)
         key = self.bytes_to_key(value=value)
         return key, value
@@ -49,7 +46,11 @@ class Cache:
 
     def _read(self, path: str, key: str, read_func=None) -> bytes:
         read_func = read_func or self.read_func
-        return read_func(path=f"{path}/{key}", mode="rb")
+        if read_func is not None:
+            return read_func(path=f"{ensure_path(path)}/{key}", mode="rb")
+        else:
+            with self.fs.open(path=f"{ensure_path(path)}/{key}", mode="rb") as f:
+                return f.read()
 
     def _write(self, path: str, key: str, value: bytes, write_func=None):
         write_func = write_func or self.write_func
