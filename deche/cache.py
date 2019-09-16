@@ -25,8 +25,7 @@ class Cache:
     output_deserializer: Callable = cloudpickle.loads
 
     fs: AbstractFileSystem = LocalFileSystem()
-    write_func: Callable = None
-    read_func: Callable = None
+    prefix: str = '/'
 
     def __post_init__(self):
         # Check for environment variables
@@ -44,30 +43,22 @@ class Cache:
     def exists(self, path, key):
         return self.fs.exists(f"{ensure_path(path)}/{key}")
 
-    def _read(self, path: str, key: str, read_func=None) -> bytes:
-        read_func = read_func or self.read_func
-        if read_func is not None:
-            return read_func(path=f"{ensure_path(path)}/{key}", mode="rb")
-        else:
-            with self.fs.open(path=f"{ensure_path(path)}/{key}", mode="rb") as f:
-                return f.read()
+    def _read(self, path: str, key: str) -> bytes:
+        with self.fs.open(path=f"{ensure_path(path)}/{key}", mode="rb") as f:
+            return f.read()
 
-    def _write(self, path: str, key: str, value: bytes, write_func=None):
-        write_func = write_func or self.write_func
-        if write_func is not None:
-            return write_func(path=f"{ensure_path(path)}/{key}", mode="wb", value=value)
-        else:
-            with self.fs.open(path=f"{ensure_path(path)}/{key}", mode="wb") as f:
-                f.write(value)
+    def _write(self, path: str, key: str, value: bytes):
+        with self.fs.open(path=f"{ensure_path(path)}/{key}", mode="wb") as f:
+            f.write(value)
 
-    def read_inputs(self, path: str, key: str, deserializer=None, read_func=None):
+    def read_inputs(self, path: str, key: str, deserializer=None):
         deserializer = deserializer or self.input_serializer
-        raw = self._read(path=path, key=key, read_func=read_func)
+        raw = self._read(path=path, key=key)
         return deserializer(raw)
 
-    def read_output(self, path: str, key: str, deserializer=None, read_func=None):
+    def read_output(self, path: str, key: str, deserializer=None):
         deserializer = deserializer or self.output_deserializer
-        raw = self._read(path=path, key=key, read_func=read_func)
+        raw = self._read(path=path, key=key)
         return deserializer(raw)
 
     def write(
