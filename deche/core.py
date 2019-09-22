@@ -1,20 +1,29 @@
 import functools
 import hashlib
 from dataclasses import dataclass
+from typing import Callable
 
 from cloudpickle import cloudpickle
-from deche.inspection import args_kwargs_to_kwargs
-from deche.util import ensure_path
 from fsspec import AbstractFileSystem
 from fsspec.implementations.local import LocalFileSystem
-from typing import Callable
+
+from deche.inspection import args_kwargs_to_kwargs
+from deche.types import singleton
+from deche.util import ensure_path
+
 
 # Remove read func, write bytes to BytesIO then write to fs
 # TODO - Use fsspec to build a more generic file interface
 # TODO - Add optional expiry time, now - created. With option to overwrite/append (cache every 5 days)
 # TODO - Tests for class methods, watch out for self cache invalidation, maybe ast the variables used in func?
 
+def tokenize(obj: object, serializer: Callable = cloudpickle.dumps) -> (str, bytes):
+    value = serializer(obj)
+    key = hashlib.sha256(value).hexdigest()
+    return key, value
 
+
+@singleton
 @dataclass
 class Cache:
     content_hash: bool = False
@@ -30,15 +39,6 @@ class Cache:
     def __post_init__(self):
         # Check for environment variables
         pass
-
-    @staticmethod
-    def bytes_to_key(value: bytes):
-        return hashlib.sha256(value).hexdigest()
-
-    def tokenize(self, obj: object, serializer: Callable = cloudpickle.dumps) -> (str, bytes):
-        value = serializer(obj)
-        key = self.bytes_to_key(value=value)
-        return key, value
 
     def exists(self, path, key):
         return self.fs.exists(f"{ensure_path(path)}/{key}")
@@ -69,14 +69,25 @@ class Cache:
             input_serializer=None,
             output_serializer=None,
     ):
-        content_hash, output_value = self.tokenize(
-            obj=output, serializer=output_serializer or self.output_serializer
-        )
-        key, input_value = self.tokenize(
-            obj=inputs, serializer=input_serializer or self.input_serializer
-        )
+        content_hash, output_value = tokenize(obj=output, serializer=output_serializer or self.output_serializer)
+        key, input_value = tokenize(obj=inputs, serializer=input_serializer or self.input_serializer)
         self._write(path=path, key=f"{key}.inputs", value=input_value)
         self._write(path=path, key=f"{key}", value=output_value)
+
+
+def tokenize_func(func):
+    def inner(*args, **kwargs):
+        full_kwargs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs)
+        key, value = tokenize(obj=full_kwargs)
+        return key
+    return inner
+
+
+def is_cached(cache, path, func):
+    def inner(*args, **kwargs):
+        key = func.tokenize(*args, **kwargs)
+        return cache.exists(path=path, key=key)
+    return inner
 
 
 def cache(prefix, **cache_kwargs):
@@ -89,12 +100,14 @@ def cache(prefix, **cache_kwargs):
         @functools.wraps(func)
         def inner(*args, **kwargs):
             inputs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs)
-            key, _ = c.tokenize(obj=inputs)
+            key, _ = tokenize(obj=inputs)
             if c.exists(path=path, key=key):
                 return c.read_output(path=path, key=key)
             output = func(*args, **kwargs)
             c.write(path=path, inputs=inputs, output=output)
 
+        inner.tokenize = tokenize_func(func=func)
+        inner.is_cached = is_cached(cache=c, path=path, func=inner)
         return inner
 
     return deco

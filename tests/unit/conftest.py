@@ -2,8 +2,9 @@ import shutil
 
 import pytest
 
-from deche.cache import Cache
+from deche.core import Cache
 from deche.test_utils import TEST_FOLDER
+from deche.types import FrozenDict
 
 
 @pytest.fixture(scope='function', autouse=True)
@@ -26,7 +27,12 @@ def path():
 
 @pytest.fixture(scope='function')
 def inputs():
-    return {'a': '1', 'b': 2, 'c': b'3'}
+    return FrozenDict({'a': '1', 'b': 2, 'c': b'3'})
+
+
+@pytest.fixture(scope='function')
+def inputs_key():
+    return '100795f3d6d26a8f8f808cb5589412f5d5f67e8fd8188a42b18f935c04348940'
 
 
 @pytest.fixture(scope='function')

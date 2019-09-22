@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from deche.cache import cache
+from deche.core import cache
 
 TEST_FOLDER = Path.absolute(Path(__file__)).parent.joinpath("resources")
 
