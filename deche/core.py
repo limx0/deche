@@ -18,6 +18,35 @@ def tokenize(obj: object, serializer: Callable = cloudpickle.dumps) -> (str, byt
     return key, value
 
 
+class decorator_with_arguments(object):
+
+    def __init__(self, arg1, arg2, arg3):
+        """
+        If there are decorator arguments, the function
+        to be decorated is not passed to the constructor!
+        """
+        print("Inside __init__()")
+        self.arg1 = arg1
+        self.arg2 = arg2
+        self.arg3 = arg3
+
+    def __call__(self, f):
+        """
+        If there are decorator arguments, __call__() is only called
+        once, as part of the decoration process! You can only give
+        it a single argument, which is the function object.
+        """
+        print("Inside __call__()")
+
+        def wrapped_f(*args):
+            print("Inside wrapped_f()")
+            print("Decorator arguments:", self.arg1, self.arg2, self.arg3)
+            f(*args)
+            print("After f(*args)")
+
+        return wrapped_f
+
+
 @singleton
 @dataclass
 class Cache:
@@ -57,12 +86,12 @@ class Cache:
         return deserializer(raw)
 
     def write(
-        self,
-        path: str,
-        inputs: object,
-        output: object,
-        input_serializer=None,
-        output_serializer=None,
+            self,
+            path: str,
+            inputs: object,
+            output: object,
+            input_serializer=None,
+            output_serializer=None,
     ):
         content_hash, output_value = tokenize(
             obj=output, serializer=output_serializer or self.output_serializer
@@ -91,6 +120,21 @@ def is_cached(cache, path, func):
     return inner
 
 
+def list_cached_parameters(cache, path):
+    def inner():
+        return [cache.read_input(f) for f in cache.glob(f'{path}/*.inputs')]
+
+    return inner
+
+
+def load_cached_data(cache, func, path):
+    def inner(*args, **kwargs):
+        key = func.tokenize(*args, **kwargs)
+        return cache.read_output(path=path, key=key)
+
+    return inner
+
+
 def cache(prefix, **cache_kwargs):
     prefix = ensure_path(prefix)
     c = Cache(**cache_kwargs)
@@ -110,6 +154,8 @@ def cache(prefix, **cache_kwargs):
 
         inner.tokenize = tokenize_func(func=func)
         inner.is_cached = is_cached(cache=c, path=path, func=inner)
+        inner.load_cached_data = load_cached_data(cache=c, path=path, func=inner)
+        inner.list_cached_parameters = list_cached_parameters(cache=c, path=path)
         return inner
 
     return deco
