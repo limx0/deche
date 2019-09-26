@@ -1,5 +1,6 @@
 import functools
 import hashlib
+import pathlib
 from dataclasses import dataclass
 from typing import Callable
 
@@ -76,7 +77,7 @@ class Cache:
             f.write(value)
 
     def read_inputs(self, path: str, key: str, deserializer=None):
-        deserializer = deserializer or self.input_serializer
+        deserializer = deserializer or self.input_deserializer
         raw = self._read(path=path, key=key)
         return deserializer(raw)
 
@@ -122,7 +123,10 @@ def is_cached(cache, path, func):
 
 def list_cached_parameters(cache, path):
     def inner():
-        return [cache.read_input(f) for f in cache.glob(f'{path}/*.inputs')]
+        return [
+            cache.read_inputs(path=path, key=pathlib.Path(f).name)
+            for f in cache.fs.glob(f'{path}/*.inputs')
+        ]
 
     return inner
 

@@ -1,5 +1,6 @@
 from deche.core import Cache, tokenize
 from deche.test_utils import func
+from deche.types import FrozenDict
 
 
 def test_key_deterministic(inputs, inputs_key):
@@ -37,6 +38,20 @@ def test_func_tokenize(inputs, inputs_key):
     assert key == inputs_key
 
 
-def test_func_is_cached(inputs, inputs_key):
+def test_func_is_cached():
     func(3, 4, zzz=10)
     assert func.is_cached(3, 4, zzz=10)
+
+
+def test_load_cached_data():
+    expected = func(3, 4, zzz=10)
+    assert func.is_cached(3, 4, zzz=10)
+    result = func.load_cached_data(3, 4, zzz=10)
+    assert result == expected
+
+
+def test_load_cached_parameters():
+    func(3, 4, zzz=10)
+    assert func.is_cached(3, 4, zzz=10)
+    result = func.list_cached_parameters()
+    assert result == [FrozenDict([('a', 3), ('b', 4), ('zzz', 10)])]
