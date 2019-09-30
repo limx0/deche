@@ -1,5 +1,6 @@
 import functools
 import hashlib
+import inspect
 import pathlib
 from dataclasses import dataclass
 from typing import Callable
@@ -19,33 +20,19 @@ def tokenize(obj: object, serializer: Callable = cloudpickle.dumps) -> (str, byt
     return key, value
 
 
-class decorator_with_arguments(object):
+def hash_clean_source(func, length=7):
+    src = inspect.getsource(func).split('\n')
+    lines = [l.strip() for l in src if not l.startswith('@')]
+    clean_src = '\n'.join(lines)
+    return hashlib.sha256(clean_src)[:length]
 
-    def __init__(self, arg1, arg2, arg3):
-        """
-        If there are decorator arguments, the function
-        to be decorated is not passed to the constructor!
-        """
-        print("Inside __init__()")
-        self.arg1 = arg1
-        self.arg2 = arg2
-        self.arg3 = arg3
 
-    def __call__(self, f):
-        """
-        If there are decorator arguments, __call__() is only called
-        once, as part of the decoration process! You can only give
-        it a single argument, which is the function object.
-        """
-        print("Inside __call__()")
-
-        def wrapped_f(*args):
-            print("Inside wrapped_f()")
-            print("Decorator arguments:", self.arg1, self.arg2, self.arg3)
-            f(*args)
-            print("After f(*args)")
-
-        return wrapped_f
+def func_qualname(func):
+    if func.__module__ == '__main__':
+        # TODO add tests
+        return f'{func.__module__}/{func.__name__}-{hash_clean_source(func)}'
+    else:
+        return f'{func.__module__}/{func.__name__}'
 
 
 @singleton
