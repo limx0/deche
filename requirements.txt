@@ -5,3 +5,4 @@ docker
 minio
 astor
 cloudpickle
+donfig
