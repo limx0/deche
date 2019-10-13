@@ -2,16 +2,16 @@ import functools
 import hashlib
 import inspect
 import pathlib
+import time
 from dataclasses import dataclass
+from enum import Enum
 from typing import Callable
 
 from cloudpickle import cloudpickle
-from fsspec import AbstractFileSystem
-from fsspec.implementations.local import LocalFileSystem
+from fsspec import AbstractFileSystem, filesystem
 
+from deche import config
 from deche.inspection import args_kwargs_to_kwargs
-from deche.types import singleton
-from deche.util import ensure_path
 
 
 def tokenize(obj: object, serializer: Callable = cloudpickle.dumps) -> (str, bytes):
@@ -35,62 +35,6 @@ def func_qualname(func):
         return f'{func.__module__}/{func.__name__}'
 
 
-@singleton
-@dataclass
-class Cache:
-    content_hash: bool = False
-
-    input_serializer: Callable = cloudpickle.dumps
-    input_deserializer: Callable = cloudpickle.loads
-    output_serializer: Callable = cloudpickle.dumps
-    output_deserializer: Callable = cloudpickle.loads
-
-    fs: AbstractFileSystem = LocalFileSystem()
-    prefix: str = "/"
-
-    def __post_init__(self):
-        # Check for environment variables
-        pass
-
-    def exists(self, path, key):
-        return self.fs.exists(f"{ensure_path(path)}/{key}")
-
-    def _read(self, path: str, key: str) -> bytes:
-        with self.fs.open(path=f"{ensure_path(path)}/{key}", mode="rb") as f:
-            return f.read()
-
-    def _write(self, path: str, key: str, value: bytes):
-        with self.fs.open(path=f"{ensure_path(path)}/{key}", mode="wb") as f:
-            f.write(value)
-
-    def read_inputs(self, path: str, key: str, deserializer=None):
-        deserializer = deserializer or self.input_deserializer
-        raw = self._read(path=path, key=key)
-        return deserializer(raw)
-
-    def read_output(self, path: str, key: str, deserializer=None):
-        deserializer = deserializer or self.output_deserializer
-        raw = self._read(path=path, key=key)
-        return deserializer(raw)
-
-    def write(
-            self,
-            path: str,
-            inputs: object,
-            output: object,
-            input_serializer=None,
-            output_serializer=None,
-    ):
-        content_hash, output_value = tokenize(
-            obj=output, serializer=output_serializer or self.output_serializer
-        )
-        key, input_value = tokenize(
-            obj=inputs, serializer=input_serializer or self.input_serializer
-        )
-        self._write(path=path, key=f"{key}.inputs", value=input_value)
-        self._write(path=path, key=f"{key}", value=output_value)
-
-
 def tokenize_func(func):
     def inner(*args, **kwargs):
         full_kwargs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs)
@@ -100,53 +44,130 @@ def tokenize_func(func):
     return inner
 
 
-def is_cached(cache, path, func):
-    def inner(*args, **kwargs):
-        key = func.tokenize(*args, **kwargs)
-        return cache.exists(path=path, key=key)
-
-    return inner
+class CacheExpiryMode(Enum):
+    REMOVE = 1
+    APPEND = 2
 
 
-def list_cached_parameters(cache, path):
-    def inner():
-        return [
-            cache.read_inputs(path=path, key=pathlib.Path(f).name)
-            for f in cache.fs.glob(f'{path}/*.inputs')
-        ]
-
-    return inner
+def is_input_filename(key):
+    return key.endswith('.inputs')
 
 
-def load_cached_data(cache, func, path):
-    def inner(*args, **kwargs):
-        key = func.tokenize(*args, **kwargs)
-        return cache.read_output(path=path, key=key)
+@dataclass
+class _Cache:
+    fs: AbstractFileSystem = None
+    prefix: str = ''
+    input_serializer: Callable = cloudpickle.dumps
+    input_deserializer: Callable = cloudpickle.loads
+    output_serializer: Callable = cloudpickle.dumps
+    output_deserializer: Callable = cloudpickle.loads
+    cache_ttl: int = None
+    cache_expiry_mode: CacheExpiryMode = CacheExpiryMode.REMOVE
 
-    return inner
+    def __post_init__(self):
+        if self.fs is None:
+            self.fs = filesystem(protocol=config.get('fs.protocol'), **config.get("fs.storage_options", {}))
 
+    def _has_passed_cache_ttl(self, path):
+        info = self.fs.info(path=path)
+        age = time.time() - info['created']
+        return age > self.cache_ttl
 
-def cache(prefix, **cache_kwargs):
-    prefix = ensure_path(prefix)
-    c = Cache(**cache_kwargs)
+    def valid(self, path):
+        exists = self.fs.exists(path)
+        if not exists:
+            return False
+        elif not self.cache_ttl:
+            return exists
+        else:
+            return not self._has_passed_cache_ttl(path=path)
 
-    def deco(func):
-        path = f"{prefix}/{func.__module__}.{func.__name__}"
+    def read(self, path):
+        with self.fs.open(path, mode='rb') as f:
+            return f.read()
+
+    def read_input(self, path, deserializer=None):
+        deserializer = deserializer or self.input_deserializer
+        data = self.read(path=path)
+        return deserializer(data)
+
+    def read_output(self, path, deserializer=None):
+        deserializer = deserializer or self.output_deserializer
+        data = self.read(path=path)
+        return deserializer(data)
+
+    def write(self, path: str, data: bytes):
+        if self.cache_ttl and self.cache_expiry_mode == CacheExpiryMode.APPEND and not is_input_filename(path):
+            # move any existing files
+            key = pathlib.Path(path).name
+            for f in sorted(self.fs.glob(f'{path}*'), reverse=True):
+                if is_input_filename(f):
+                    continue
+                if pathlib.Path(f).name == key:
+                    num = 0
+                    suffix = ''
+                else:
+                    num = int(f.replace(f'{path}-', ""))
+                    f = f[:-2]
+                    suffix = f'-{num}'
+                self.fs.mv(f'{f}{suffix}', f'{f}-{num+1}')
+        with self.fs.open(path, mode='wb') as f:
+            return f.write(data)
+
+    def write_input(self, path, inputs, input_serializer=None):
+        key, input_value = tokenize(obj=inputs, serializer=input_serializer or self.input_serializer)
+        self.write(path=f"{path}.inputs", data=input_value)
+
+    def write_output(self, path, output, output_serializer=None):
+        content_hash, output_value = tokenize(
+            obj=output, serializer=output_serializer or self.output_serializer
+        )
+        self.write(path=path, data=output_value)
+
+    def is_cached(self, path, func):
+        def inner(*args, **kwargs):
+            key = func.tokenize(*args, **kwargs)
+            return self.valid(path=f'{path}/{key}')
+
+        return inner
+
+    def list_cached_parameters(self, path, deserializer=None):
+        deserializer = deserializer or self.input_deserializer
+
+        def inner():
+            input_files = list(self.fs.glob(f'{path}/*.inputs'))
+            return [self.read_input(f, deserializer=deserializer) for f in input_files]
+
+        return inner
+
+    def load_cached_data(self, func, path, deserializer=None):
+        def inner(*args, **kwargs):
+            key = func.tokenize(*args, **kwargs)
+            return self.read_output(path=f'{path}/{key}', deserializer=deserializer)
+
+        return inner
+
+    def __call__(self, func):
+        path = f"{self.prefix}/{func.__module__}.{func.__name__}"
 
         @functools.wraps(func)
         def inner(*args, **kwargs):
             inputs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs)
             key, _ = tokenize(obj=inputs)
-            if c.exists(path=path, key=key):
-                return c.read_output(path=path, key=key)
+            if self.valid(path=f'{path}/{key}'):
+                return self.read(path=f'{path}/{key}')
             output = func(*args, **kwargs)
-            c.write(path=path, inputs=inputs, output=output)
+            self.write_input(path=f'{path}/{key}', inputs=inputs)
+            self.write_output(path=f'{path}/{key}', output=output)
             return output
 
         inner.tokenize = tokenize_func(func=func)
-        inner.is_cached = is_cached(cache=c, path=path, func=inner)
-        inner.load_cached_data = load_cached_data(cache=c, path=path, func=inner)
-        inner.list_cached_parameters = list_cached_parameters(cache=c, path=path)
+        inner.is_cached = self.is_cached(path=path, func=inner)
+        inner.load_cached_data = self.load_cached_data(path=path, func=inner)
+        inner.list_cached_parameters = self.list_cached_parameters(path=path)
         return inner
 
-    return deco
+
+# noinspection PyPep8Naming
+class cache(_Cache):
+    pass

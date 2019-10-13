@@ -1,8 +1,11 @@
-from pathlib import Path
+import tempfile
 
-from deche.core import cache
+from fsspec.implementations.local import LocalFileSystem
 
-TEST_FOLDER = Path.absolute(Path(__file__)).parent.joinpath("resources")
+from deche.core import cache, CacheExpiryMode
+
+tmp_fs = LocalFileSystem()
+path = str(tempfile.mkdtemp())
 
 
 class Class:
@@ -10,13 +13,23 @@ class Class:
         self.a = a
         self.b = b
 
-    @cache(TEST_FOLDER)
+    @cache(fs=tmp_fs)
     def c(self):
         return self.a + self.b
 
 
-@cache(prefix=str(TEST_FOLDER))
+@cache(fs=tmp_fs, prefix=path)
 def func(a, b, **kwargs):
+    return a + b
+
+
+@cache(fs=tmp_fs, prefix=path, cache_ttl=0.1, cache_expiry_mode=CacheExpiryMode.REMOVE)
+def func_ttl_expiry(a, b, **kwargs):
+    return a + b
+
+
+@cache(fs=tmp_fs, prefix=path, cache_ttl=0.1, cache_expiry_mode=CacheExpiryMode.APPEND)
+def func_ttl_expiry_append(a, b, **kwargs):
     return a + b
 
 

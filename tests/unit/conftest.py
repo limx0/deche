@@ -1,28 +1,34 @@
-import shutil
-
 import pytest
 
-from deche.core import Cache
-from deche.test_utils import TEST_FOLDER
+from deche.core import cache
+from deche.test_utils import tmp_fs, path as tmp_path
 from deche.types import FrozenDict
 
 
 @pytest.fixture(scope='function', autouse=True)
-def cleanup(path):
-    if TEST_FOLDER.exists():
-        shutil.rmtree(TEST_FOLDER)
+def cleanup(c: cache, path):
+    files = list(c.fs.glob(f'{path}/**/*'))
+    for f in files:
+        if c.fs.exists(f):
+            c.fs.rm(path=f)
+
+
+@pytest.fixture(scope='session', autouse=True)
+def test_cleanup():
     yield
-    TEST_FOLDER.mkdir(exist_ok=True)
+    for f in tmp_fs.glob(path=f'{tmp_path}/**/*'):
+        if tmp_fs.exists(f):
+            tmp_fs.rm(f)
 
 
 @pytest.fixture()
 def c():
-    return Cache()
+    return cache(fs=tmp_fs)
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture()
 def path():
-    return str(TEST_FOLDER)
+    return tmp_path
 
 
 @pytest.fixture(scope='function')
