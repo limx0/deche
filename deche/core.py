@@ -1,3 +1,4 @@
+import datetime
 import functools
 import hashlib
 import inspect
@@ -5,7 +6,7 @@ import pathlib
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Callable
+from typing import Callable, Union
 
 from cloudpickle import cloudpickle
 from fsspec import AbstractFileSystem, filesystem
@@ -61,12 +62,14 @@ class _Cache:
     input_deserializer: Callable = cloudpickle.loads
     output_serializer: Callable = cloudpickle.dumps
     output_deserializer: Callable = cloudpickle.loads
-    cache_ttl: int = None
+    cache_ttl: Union[datetime.timedelta, int] = None
     cache_expiry_mode: CacheExpiryMode = CacheExpiryMode.REMOVE
 
     def __post_init__(self):
         if self.fs is None:
             self.fs = filesystem(protocol=config.get('fs.protocol'), **config.get("fs.storage_options", {}))
+        if isinstance(self.cache_ttl, datetime.timedelta):
+            self.cache_ttl = self.cache_ttl.total_seconds()
 
     def _has_passed_cache_ttl(self, path):
         info = self.fs.info(path=path)
