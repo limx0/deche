@@ -13,6 +13,7 @@ from fsspec import AbstractFileSystem, filesystem
 
 from deche import config
 from deche.inspection import args_kwargs_to_kwargs
+from deche.util import modified_name
 
 
 def tokenize(obj: object, serializer: Callable = cloudpickle.dumps) -> (str, bytes):
@@ -73,7 +74,8 @@ class _Cache:
 
     def _has_passed_cache_ttl(self, path):
         info = self.fs.info(path=path)
-        age = time.time() - info['created']
+        modified = info[modified_name(self.fs)]
+        age = time.time() - modified
         return age > self.cache_ttl
 
     def valid(self, path):
