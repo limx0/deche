@@ -8,12 +8,12 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Callable, Union
 
+import fsspec
 from cloudpickle import cloudpickle
 from fsspec import AbstractFileSystem, filesystem
 
 from deche import config
 from deche.inspection import args_kwargs_to_kwargs
-from deche.util import modified_name
 
 
 def tokenize(obj: object, serializer: Callable = cloudpickle.dumps) -> (str, bytes):
@@ -73,10 +73,19 @@ class _Cache:
             self.cache_ttl = self.cache_ttl.total_seconds()
 
     def _has_passed_cache_ttl(self, path):
-        info = self.fs.info(path=path)
-        modified = info[modified_name(self.fs)]
+        modified = self.last_modified(path=path)
         age = time.time() - modified
         return age > self.cache_ttl
+
+    def last_modified(self, path):
+        """ Return last modified time as unix timestamps """
+        info = self.fs.info(path=path)
+        if isinstance(self.fs, fsspec.get_filesystem_class('file')):
+            return info['created']
+        elif isinstance(self.fs, fsspec.get_filesystem_class('s3')):
+            return info['LastModified'].timestamp()
+        else:
+            raise NotImplementedError
 
     def valid(self, path):
         exists = self.fs.exists(path)
@@ -115,7 +124,7 @@ class _Cache:
                     num = int(f.replace(f'{path}-', ""))
                     f = f[:-2]
                     suffix = f'-{num}'
-                self.fs.mv(f'{f}{suffix}', f'{f}-{num+1}')
+                self.fs.mv(f'{f}{suffix}', f'{f}-{num + 1}')
         with self.fs.open(path, mode='wb') as f:
             return f.write(data)
 
