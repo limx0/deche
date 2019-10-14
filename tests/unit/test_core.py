@@ -44,6 +44,7 @@ def test_func_tokenize(inputs, inputs_key):
 def test_func_is_cached():
     func(3, 4, zzz=10)
     assert func.is_cached(3, 4, zzz=10)
+    assert func.is_cached(b=4, a=3, zzz=10)
 
 
 def test_load_cached_data():

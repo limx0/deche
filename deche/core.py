@@ -169,7 +169,7 @@ class _Cache:
             inputs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs)
             key, _ = tokenize(obj=inputs)
             if self.valid(path=f'{path}/{key}'):
-                return self.read(path=f'{path}/{key}')
+                return self.read_output(path=f'{path}/{key}')
             output = func(*args, **kwargs)
             self.write_input(path=f'{path}/{key}', inputs=inputs)
             self.write_output(path=f'{path}/{key}', output=output)
