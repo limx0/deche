@@ -167,6 +167,10 @@ class _Cache:
         inner.list_cached_parameters = self.list_cached_parameters(path=path)
         return inner
 
+    def replace(self, **kwargs):
+        attrs = {k: getattr(self, k) for k in self.__dataclass_fields__}
+        return self.__class__(**{**attrs, **kwargs})
+
 
 # noinspection PyPep8Naming
 class cache(_Cache):
