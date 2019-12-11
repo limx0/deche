@@ -179,6 +179,7 @@ class _Cache:
         inner.is_cached = self.is_cached(path=path, func=inner)
         inner.load_cached_data = self.load_cached_data(path=path, func=inner)
         inner.list_cached_parameters = self.list_cached_parameters(path=path)
+        inner.path = path
         return inner
 
     def replace(self, **kwargs):
