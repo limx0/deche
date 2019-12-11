@@ -1,11 +1,12 @@
 import tempfile
 
 from fsspec.implementations.local import LocalFileSystem
+from fsspec.implementations.memory import MemoryFileSystem
 
 from deche.core import cache, CacheExpiryMode
 
-tmp_fs = LocalFileSystem()
-path = str(tempfile.mkdtemp())
+mem_fs = MemoryFileSystem()
+path = ''
 
 
 class Class:
@@ -13,14 +14,18 @@ class Class:
         self.a = a
         self.b = b
 
-    @cache(fs=tmp_fs)
+    @cache(fs=mem_fs)
     def c(self):
         return self.a + self.b
 
 
-@cache(fs=tmp_fs, prefix=path)
+@cache(fs=mem_fs, prefix=path)
 def func(a, b, **kwargs):
     return a + b
+
+
+tmp_fs = LocalFileSystem()
+path = str(tempfile.mkdtemp())
 
 
 @cache(fs=tmp_fs, prefix=path, cache_ttl=0.1, cache_expiry_mode=CacheExpiryMode.REMOVE)

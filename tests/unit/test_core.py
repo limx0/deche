@@ -1,7 +1,7 @@
 import time
 
 from deche.core import cache, tokenize
-from deche.test_utils import func, identity, func_ttl_expiry, func_ttl_expiry_append
+from deche.test_utils import func, identity, func_ttl_expiry, func_ttl_expiry_append, tmp_fs
 from deche.types import FrozenDict
 
 
@@ -28,10 +28,10 @@ def test_write(c, path, inputs, output):
     assert c.valid(path=f'{path}/{key}')
 
 
-def test_func_wrapper(c, path):
+def test_func_wrapper(c):
     func(1, 2, x=5)
     key = '53f8bed42c814532ae65a8cf727fbebacfcdb46d24b0e770990f23471fba4f60'
-    full_path = f'{path}/{func.__module__}.{func.__name__}/{key}'
+    full_path = f'/{func.__module__}.{func.__name__}/{key}'
     assert func.tokenize(1, 2, x=5) == key
     assert c.valid(path=full_path)
 
@@ -44,6 +44,7 @@ def test_func_tokenize(inputs, inputs_key):
 def test_func_is_cached():
     func(3, 4, zzz=10)
     assert func.is_cached(3, 4, zzz=10)
+    assert func.is_cached(b=4, a=3, zzz=10)
 
 
 def test_load_cached_data():
@@ -67,7 +68,7 @@ def test_cache_ttl():
     assert not func_ttl_expiry.is_cached(1, 2)
 
 
-def test_cache_append(c: cache, path):
+def test_cache_append(path):
     func_ttl_expiry_append(1, 2)
     assert func_ttl_expiry_append.is_cached(1, 2)
     time.sleep(0.11)
@@ -76,6 +77,13 @@ def test_cache_append(c: cache, path):
     func_ttl_expiry_append(1, 2)
     key = func_ttl_expiry_append.tokenize(1, 2)
     full_path = f'{path}/{func_ttl_expiry_append.__module__}.{func_ttl_expiry_append.__name__}'
+
+    c = cache(fs=tmp_fs)
     assert c.fs.exists(path=f'{full_path}/{key}')
     assert c.fs.exists(path=f'{full_path}/{key}-1')
     assert c.fs.exists(path=f'{full_path}/{key}-2')
+
+
+def test_cache_path(c: cache, path):
+    func(1, 2)
+    assert func.path == '/deche.test_utils.func'

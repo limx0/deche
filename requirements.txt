@@ -1,4 +1,4 @@
-fsspec
+fsspec~=0.6.0
 s3fs
 pytest
 docker

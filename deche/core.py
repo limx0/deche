@@ -1,3 +1,4 @@
+import datetime
 import functools
 import hashlib
 import inspect
@@ -5,8 +6,9 @@ import pathlib
 import time
 from dataclasses import dataclass
 from enum import Enum
-from typing import Callable
+from typing import Callable, Union
 
+import fsspec
 from cloudpickle import cloudpickle
 from fsspec import AbstractFileSystem, filesystem
 
@@ -61,17 +63,29 @@ class _Cache:
     input_deserializer: Callable = cloudpickle.loads
     output_serializer: Callable = cloudpickle.dumps
     output_deserializer: Callable = cloudpickle.loads
-    cache_ttl: int = None
+    cache_ttl: Union[datetime.timedelta, int] = None
     cache_expiry_mode: CacheExpiryMode = CacheExpiryMode.REMOVE
 
     def __post_init__(self):
         if self.fs is None:
             self.fs = filesystem(protocol=config.get('fs.protocol'), **config.get("fs.storage_options", {}))
+        if isinstance(self.cache_ttl, datetime.timedelta):
+            self.cache_ttl = self.cache_ttl.total_seconds()
 
     def _has_passed_cache_ttl(self, path):
-        info = self.fs.info(path=path)
-        age = time.time() - info['created']
+        modified = self.last_modified(path=path)
+        age = time.time() - modified
         return age > self.cache_ttl
+
+    def last_modified(self, path):
+        """ Return last modified time as unix timestamps """
+        info = self.fs.info(path=path)
+        if isinstance(self.fs, fsspec.get_filesystem_class('file')):
+            return info['created']
+        elif isinstance(self.fs, fsspec.get_filesystem_class('s3')):
+            return info['LastModified'].timestamp()
+        else:
+            raise NotImplementedError
 
     def valid(self, path):
         exists = self.fs.exists(path)
@@ -110,7 +124,7 @@ class _Cache:
                     num = int(f.replace(f'{path}-', ""))
                     f = f[:-2]
                     suffix = f'-{num}'
-                self.fs.mv(f'{f}{suffix}', f'{f}-{num+1}')
+                self.fs.mv(f'{f}{suffix}', f'{f}-{num + 1}')
         with self.fs.open(path, mode='wb') as f:
             return f.write(data)
 
@@ -155,7 +169,7 @@ class _Cache:
             inputs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs)
             key, _ = tokenize(obj=inputs)
             if self.valid(path=f'{path}/{key}'):
-                return self.read(path=f'{path}/{key}')
+                return self.read_output(path=f'{path}/{key}')
             output = func(*args, **kwargs)
             self.write_input(path=f'{path}/{key}', inputs=inputs)
             self.write_output(path=f'{path}/{key}', output=output)
@@ -165,7 +179,12 @@ class _Cache:
         inner.is_cached = self.is_cached(path=path, func=inner)
         inner.load_cached_data = self.load_cached_data(path=path, func=inner)
         inner.list_cached_parameters = self.list_cached_parameters(path=path)
+        inner.path = path
         return inner
+
+    def replace(self, **kwargs):
+        attrs = {k: getattr(self, k) for k in self.__dataclass_fields__}
+        return self.__class__(**{**attrs, **kwargs})
 
 
 # noinspection PyPep8Naming

@@ -1,7 +1,7 @@
 import pytest
 
 from deche.core import cache
-from deche.test_utils import tmp_fs, path as tmp_path
+from deche.test_utils import mem_fs, path as cache_path, tmp_fs
 from deche.types import FrozenDict
 
 
@@ -13,22 +13,22 @@ def cleanup(c: cache, path):
             c.fs.rm(path=f)
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope='function', autouse=True)
 def test_cleanup():
     yield
-    for f in tmp_fs.glob(path=f'{tmp_path}/**/*'):
-        if tmp_fs.exists(f):
-            tmp_fs.rm(f)
+    for f in mem_fs.glob(path=f'/**/*'):
+        if mem_fs.exists(f):
+            mem_fs.rm(f)
 
 
 @pytest.fixture()
 def c():
-    return cache(fs=tmp_fs)
+    return cache(fs=mem_fs)
 
 
 @pytest.fixture()
 def path():
-    return tmp_path
+    return cache_path
 
 
 @pytest.fixture(scope='function')
