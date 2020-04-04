@@ -24,7 +24,12 @@ def func(a, b, **kwargs):
     return a + b
 
 
-tmp_fs = LocalFileSystem()
+@cache(fs=mem_fs, prefix=path)
+def exc_func():
+    return 1/0
+
+
+tmp_fs = LocalFileSystem(auto_mkdir=True)
 path = str(tempfile.mkdtemp())
 
 

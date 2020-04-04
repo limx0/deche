@@ -1,7 +1,7 @@
 import pytest
 
 from deche.core import cache
-from deche.test_utils import mem_fs, path as cache_path, tmp_fs
+from deche.test_utils import mem_fs, path as cache_path, tmp_fs, exc_func
 from deche.types import FrozenDict
 
 
@@ -44,3 +44,8 @@ def inputs_key():
 @pytest.fixture(scope='function')
 def output():
     return b'some data'
+
+
+@pytest.fixture(scope='function')
+def cached_exception():
+    exc_func()
