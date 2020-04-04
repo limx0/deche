@@ -35,3 +35,8 @@ def func_qualname(func):
         return f'{func.__module__}/{func.__name__}-{hash_clean_source(func)}'
     else:
         return f'{func.__module__}/{func.__name__}'
+
+
+def identity(x):
+    """Identitfy function"""
+    return x

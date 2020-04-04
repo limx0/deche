@@ -13,7 +13,7 @@ from fsspec.implementations.local import LocalFileSystem
 
 from deche import config
 from deche.inspection import args_kwargs_to_kwargs
-from deche.util import is_input_filename
+from deche.util import is_input_filename, identity
 from deche.validators import exists, has_passed_cache_ttl
 
 
@@ -33,6 +33,11 @@ def tokenize_func(func):
 
 
 DEFAULT_VALIDATORS = (exists,)
+
+
+class Extensions:
+    inputs = '.inputs'
+    exception = '.exc'
 
 
 class CacheExpiryMode(Enum):
@@ -66,9 +71,6 @@ class _Cache:
 
     def valid(self, path):
         return all((validator(fs=self.fs, path=path) for validator in self.cache_validators))
-
-    def is_exception(self, path):
-        return self.fs.exists(path=f'{path}.exc')
 
     def read(self, path):
         with self.fs.open(path, mode='rb') as f:
@@ -104,7 +106,7 @@ class _Cache:
 
     def write_input(self, path, inputs, input_serializer=None):
         key, input_value = tokenize(obj=inputs, serializer=input_serializer or self.input_serializer)
-        self.write(path=f"{path}.inputs", data=input_value)
+        self.write(path=f"{path}{Extensions.inputs}", data=input_value)
 
     def write_output(self, path, output, output_serializer=None):
         content_hash, output_value = tokenize(
@@ -119,28 +121,47 @@ class _Cache:
 
         return inner
 
-    def list_cached_parameters(self, path, deserializer=None):
-        deserializer = deserializer or self.input_deserializer
+    def is_exception(self, path):
+        return self.fs.exists(path=f'{path}{Extensions.exception}')
 
+    # def is_exception(self, path, func):
+    #     def inner(*args, **kwargs):
+    #         key = func.tokenize(*args, **kwargs)
+    #         return self.fs.exists(path=f'{path}/{key}{Extensions.exception}')
+    #
+    #     return inner
+
+    def _list(self, path, ext=None, filter_=identity):
         def inner():
-            input_files = list(self.fs.glob(f'{path}/*.inputs'))
-            return [self.read_input(f, deserializer=deserializer) for f in input_files]
+            return list(filter(filter_, self.fs.glob(f"{path}/*{ext or ''}")))
+        return inner
+
+    def _load(self, func, path, deserializer=None, ext=None):
+        def inner(*args, **kwargs):
+            key = func.tokenize(*args, **kwargs)
+            return self.read_output(path=f"{path}/{key}{ext or ''}", deserializer=deserializer)
 
         return inner
+
+    def list_cached_inputs(self, path):
+        return self._list(path=path, ext=Extensions.inputs)
+
+    def list_cached_data(self, path):
+        def filter_(f):
+            return not f.endswith(Extensions.inputs) or f.endswith(Extensions.exception)
+        return self._list(path=path, ext=None, filter_=filter_)
+
+    def list_cached_exceptions(self, path):
+        return self._list(path=path, ext=Extensions.exception)
 
     def load_cached_data(self, func, path, deserializer=None):
-        def inner(*args, **kwargs):
-            key = func.tokenize(*args, **kwargs)
-            return self.read_output(path=f'{path}/{key}', deserializer=deserializer)
+        return self._load(func=func, path=path, deserializer=deserializer, ext=None)
 
-        return inner
+    def load_cached_inputs(self, func, path, deserializer=None):
+        return self._load(func=func, path=path, deserializer=deserializer, ext=Extensions.inputs)
 
     def load_cached_exception(self, func, path, deserializer=None):
-        def inner(*args, **kwargs):
-            key = func.tokenize(*args, **kwargs)
-            return self.read_output(path=f'{path}/{key}.exc', deserializer=deserializer)
-
-        return inner
+        return self._load(func=func, path=path, deserializer=deserializer, ext=Extensions.exception)
 
     def __call__(self, func):
         path = f"{self.prefix}/{func.__module__}.{func.__name__}"
@@ -158,15 +179,19 @@ class _Cache:
                 self.write_output(path=f'{path}/{key}', output=output)
             except Exception as e:
                 output = e
-                self.write_output(path=f'{path}/{key}.exc', output=output)
+                self.write_output(path=f'{path}/{key}{Extensions.exception}', output=output)
             self.write_input(path=f'{path}/{key}', inputs=inputs)
             return output
 
         inner.tokenize = tokenize_func(func=func)
         inner.is_cached = self.is_cached(path=path, func=inner)
+        # inner.is_exception = self.is_exception(path=path, func=inner)
+        inner.list_cached_data = self.list_cached_data(path=path)
+        inner.list_cached_inputs = self.list_cached_inputs(path=path)
+        inner.list_cached_exceptions = self.list_cached_exceptions(path=path)
+        inner.load_cached_inputs = self.load_cached_inputs(path=path, func=inner)
         inner.load_cached_data = self.load_cached_data(path=path, func=inner)
         inner.load_cached_exception = self.load_cached_exception(path=path, func=inner)
-        inner.list_cached_parameters = self.list_cached_parameters(path=path)
         inner.path = path
         return inner
 
