@@ -1,7 +1,10 @@
 import time
+from unittest import mock
+
+import pytest
 
 from deche.core import cache, tokenize
-from deche.test_utils import func, identity, func_ttl_expiry, func_ttl_expiry_append, tmp_fs
+from deche.test_utils import func, identity, func_ttl_expiry, func_ttl_expiry_append, tmp_fs, exc_func
 from deche.types import FrozenDict
 
 
@@ -87,3 +90,30 @@ def test_cache_append(path):
 def test_cache_path(c: cache, path):
     func(1, 2)
     assert func.path == '/deche.test_utils.func'
+
+
+def test_cache_exception(c: cache, path):
+    try:
+        exc_func()
+    except ZeroDivisionError as e:
+        exc = exc_func.load_cached_exception()
+        assert exc == e
+
+
+@mock.patch('deche.cache.write_output')
+def test_exception_no_run(mock_write_output, cached_exception):
+    exc_func()
+    assert not mock_write_output.called
+
+
+def test_failing_validator():
+
+    def failing_validator(fs, path):
+        raise Exception("Validator Failed")
+
+    @cache(fs='mem', cache_validators=(failing_validator,))
+    def func():
+        return 1
+
+    with pytest.raises(Exception) as e:
+        assert e.value == 'Validator Failed'
