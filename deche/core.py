@@ -137,8 +137,10 @@ class _Cache:
         return inner
 
     def _load(self, func, path, deserializer=None, ext=None):
-        def inner(*args, **kwargs):
-            key = func.tokenize(*args, **kwargs)
+        def inner(*, key=None, kwargs=None):
+            assert (key is not None or kwargs is not None), "Must pass key or kwargs"
+            if key is None:
+                key = func.tokenize(**kwargs)
             return self.read_output(path=f"{path}/{key}{ext or ''}", deserializer=deserializer)
 
         return inner

@@ -4,6 +4,7 @@ from unittest import mock
 import pytest
 
 from deche.core import cache, tokenize
+from deche.inspection import args_kwargs_to_kwargs
 from deche.test_utils import func, identity, func_ttl_expiry, func_ttl_expiry_append, tmp_fs, exc_func
 from deche.types import FrozenDict
 
@@ -75,20 +76,33 @@ def test_list_cached_exceptions():
 def test_load_cached_inputs():
     expected = dict(a=3, b=4, zzz=10)
     func(**expected)
-    result = func.load_cached_inputs(3, 4, zzz=10)
+    result = func.load_cached_inputs(kwargs=expected)
+    assert result == expected
+
+    key = func.tokenize(a=3, b=4, zzz=10)
+    result = func.load_cached_inputs(key=key)
     assert result == expected
 
 
 def test_load_cached_data():
     expected = func(3, 4, zzz=10)
     assert func.is_cached(3, 4, zzz=10)
-    result = func.load_cached_data(3, 4, zzz=10)
+
+    result = func.load_cached_data(kwargs=dict(a=3, b=4, zzz=10))
+    assert result == expected
+
+    key = func.tokenize(a=3, b=4, zzz=10)
+    result = func.load_cached_data(key=key)
     assert result == expected
 
 
 def test_load_cached_exception():
     expected = exc_func()
-    result = exc_func.load_cached_exception()
+    result = exc_func.load_cached_exception(kwargs={})
+    assert isinstance(result, type(expected))
+
+    key = exc_func.tokenize()
+    result = exc_func.load_cached_exception(key=key)
     assert isinstance(result, type(expected))
 
 
