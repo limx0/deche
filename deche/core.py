@@ -132,8 +132,12 @@ class _Cache:
     #     return inner
 
     def _list(self, path, ext=None, filter_=identity):
-        def inner():
-            return list(filter(filter_, self.fs.glob(f"{path}/*{ext or ''}")))
+        def inner(key_only=True):
+            files = list(filter(filter_, self.fs.glob(f"{path}/*{ext or ''}")))
+            if key_only:
+                files = [pathlib.Path(f).stem for f in files]
+            return files
+
         return inner
 
     def _load(self, func, path, deserializer=None, ext=None):

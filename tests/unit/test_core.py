@@ -53,7 +53,11 @@ def test_func_is_cached():
 
 def test_list_cached_inputs():
     func(3, 4, zzz=10)
+
     result = func.list_cached_inputs()
+    assert result == ['745c3cd4d7f1e96bbc62406e2e0b65749c546ceea0629a37e25fdad123eee86e']
+
+    result = func.list_cached_inputs(key_only=False)
     assert result == ['/deche.test_utils.func/745c3cd4d7f1e96bbc62406e2e0b65749c546ceea0629a37e25fdad123eee86e.inputs']
 
 
@@ -61,6 +65,9 @@ def test_list_cached_data():
     func(3, 4, zzz=10)
     assert func.is_cached(3, 4, zzz=10)
     result = func.list_cached_data()
+    assert result == ['745c3cd4d7f1e96bbc62406e2e0b65749c546ceea0629a37e25fdad123eee86e']
+
+    result = func.list_cached_data(key_only=False)
     assert result == ['/deche.test_utils.func/745c3cd4d7f1e96bbc62406e2e0b65749c546ceea0629a37e25fdad123eee86e']
 
 
@@ -70,8 +77,10 @@ def test_list_cached_exceptions():
     except Exception as e:
         pass
     result = exc_func.list_cached_exceptions()
-    assert result == ['/deche.test_utils.exc_func/be51217c13e7165157585330ecb37a638ef58d32dd8ff4c5b1aadc0a59298f19.exc']
+    assert result == ['be51217c13e7165157585330ecb37a638ef58d32dd8ff4c5b1aadc0a59298f19']
 
+    result = exc_func.list_cached_exceptions(key_only=False)
+    assert result == ['/deche.test_utils.exc_func/be51217c13e7165157585330ecb37a638ef58d32dd8ff4c5b1aadc0a59298f19.exc']
 
 def test_load_cached_inputs():
     expected = dict(a=3, b=4, zzz=10)
