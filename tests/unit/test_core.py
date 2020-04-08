@@ -4,9 +4,7 @@ from unittest import mock
 import pytest
 
 from deche.core import cache, tokenize
-from deche.inspection import args_kwargs_to_kwargs
 from deche.test_utils import func, identity, func_ttl_expiry, func_ttl_expiry_append, tmp_fs, exc_func
-from deche.types import FrozenDict
 
 
 def test_key_deterministic(inputs, inputs_key):
@@ -82,6 +80,7 @@ def test_list_cached_exceptions():
     result = exc_func.list_cached_exceptions(key_only=False)
     assert result == ['/deche.test_utils.exc_func/be51217c13e7165157585330ecb37a638ef58d32dd8ff4c5b1aadc0a59298f19.exc']
 
+
 def test_load_cached_inputs():
     expected = dict(a=3, b=4, zzz=10)
     func(**expected)
@@ -96,6 +95,8 @@ def test_load_cached_inputs():
 def test_load_cached_data():
     expected = func(3, 4, zzz=10)
     assert func.is_cached(3, 4, zzz=10)
+    result = func.load_cached_data(kwargs={'a': 3, 'b': 4, 'zzz': 10})
+    assert expected == result == func(3, 4, zzz=10)
 
     result = func.load_cached_data(kwargs=dict(a=3, b=4, zzz=10))
     assert result == expected
@@ -109,6 +110,7 @@ def test_load_cached_exception():
     expected = exc_func()
     result = exc_func.load_cached_exception(kwargs={})
     assert isinstance(result, type(expected))
+    assert type(expected) == type(result) == type(exc_func())
 
     key = exc_func.tokenize()
     result = exc_func.load_cached_exception(key=key)
@@ -158,7 +160,6 @@ def test_exception_no_run(mock_write_output, cached_exception):
 
 
 def test_failing_validator():
-
     def failing_validator(fs, path):
         raise Exception("Validator Failed")
 

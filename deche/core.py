@@ -177,9 +177,9 @@ class _Cache:
             inputs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs)
             key, _ = tokenize(obj=inputs)
             if self.valid(path=f'{path}/{key}'):
-                return self.load_cached_data(func=func, path=f'{path}/{key}')
+                return self.load_cached_data(func=func, path=path)(key=key)
             elif self.is_exception(path=f'{path}/{key}'):
-                return self.load_cached_exception(func=func, path=path)
+                return self.load_cached_exception(func=func, path=path)(key=key)
             try:
                 output = func(*args, **kwargs)
                 self.write_output(path=f'{path}/{key}', output=output)
