@@ -121,8 +121,14 @@ class _Cache:
 
         return inner
 
-    def is_exception(self, path):
-        return self.fs.exists(path=f'{path}{Extensions.exception}')
+    # TODO This needs to be cleaned up
+    def is_exception(self, path, func):
+        def inner(*args, **kwargs):
+            key = tokenize_func(func)(*args, **kwargs)
+            return self.fs.exists(path=f'{path}/{key}{Extensions.exception}')
+
+        return inner
+
 
     # def is_exception(self, path, func):
     #     def inner(*args, **kwargs):
@@ -178,20 +184,21 @@ class _Cache:
             key, _ = tokenize(obj=inputs)
             if self.valid(path=f'{path}/{key}'):
                 return self.load_cached_data(func=func, path=path)(key=key)
-            elif self.is_exception(path=f'{path}/{key}'):
-                return self.load_cached_exception(func=func, path=path)(key=key)
+            elif self.is_exception(path=path, func=func)(*args, **kwargs):
+                raise self.load_cached_exception(func=func, path=path)(key=key)
             try:
+                self.write_input(path=f'{path}/{key}', inputs=inputs)
                 output = func(*args, **kwargs)
                 self.write_output(path=f'{path}/{key}', output=output)
             except Exception as e:
-                output = e
-                self.write_output(path=f'{path}/{key}{Extensions.exception}', output=output)
-            self.write_input(path=f'{path}/{key}', inputs=inputs)
+                self.write_output(path=f'{path}/{key}{Extensions.exception}', output=e)
+                raise e
+
             return output
 
         inner.tokenize = tokenize_func(func=func)
         inner.is_cached = self.is_cached(path=path, func=inner)
-        # inner.is_exception = self.is_exception(path=path, func=inner)
+        inner.is_exception = self.is_exception(path=path, func=inner)
         inner.list_cached_data = self.list_cached_data(path=path)
         inner.list_cached_inputs = self.list_cached_inputs(path=path)
         inner.list_cached_exceptions = self.list_cached_exceptions(path=path)

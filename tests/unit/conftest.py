@@ -48,4 +48,7 @@ def output():
 
 @pytest.fixture(scope='function')
 def cached_exception():
-    exc_func()
+    try:
+        exc_func()
+    except ZeroDivisionError:
+        pass

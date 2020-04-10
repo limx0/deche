@@ -107,14 +107,16 @@ def test_load_cached_data():
 
 
 def test_load_cached_exception():
-    expected = exc_func()
-    result = exc_func.load_cached_exception(kwargs={})
-    assert isinstance(result, type(expected))
-    assert type(expected) == type(result) == type(exc_func())
+    try:
+        exc_func()
+    except ZeroDivisionError as expected:
+        result = exc_func.load_cached_exception(kwargs={})
+        assert isinstance(result, type(expected))
+        assert type(expected) == type(result)
 
-    key = exc_func.tokenize()
-    result = exc_func.load_cached_exception(key=key)
-    assert isinstance(result, type(expected))
+        key = exc_func.tokenize()
+        result = exc_func.load_cached_exception(key=key)
+        assert isinstance(result, type(expected))
 
 
 def test_cache_ttl():
@@ -149,13 +151,21 @@ def test_cache_exception(c: cache, path):
     try:
         exc_func()
     except ZeroDivisionError as e:
-        exc = exc_func.load_cached_exception()
-        assert exc == e
+        exc = exc_func.load_cached_exception(kwargs={})
+        assert type(exc) == type(e)
+
+
+def test_cached_exception_raises(cached_exception):
+    with pytest.raises(ZeroDivisionError):
+        exc_func()
 
 
 @mock.patch('deche.cache.write_output')
 def test_exception_no_run(mock_write_output, cached_exception):
-    exc_func()
+    try:
+        exc_func()
+    except ZeroDivisionError:
+        pass
     assert not mock_write_output.called
 
 
