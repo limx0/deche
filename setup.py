@@ -25,15 +25,10 @@ def get_default(parser, section, option, default):
 
 # Build a parser and fetch setup options
 parser = configparser.RawConfigParser()
-parser.read('cirrus.conf')
-src_dir = get_default(parser, 'package', 'find_packages', '.')
-excl_dirs = get_default(parser, 'package', 'exclude_packages', [])
-requirements_filename = get_default(
-    parser,
-    'build',
-    'requirements-file',
-    'requirements.txt'
-)
+parser.read("cirrus.conf")
+src_dir = get_default(parser, "package", "find_packages", ".")
+excl_dirs = get_default(parser, "package", "exclude_packages", [])
+requirements_filename = get_default(parser, "build", "requirements-file", "requirements.txt")
 requirements_file = open(requirements_filename)
 
 # Manually parse the requirements file. Pip 1.5.6 to 6.0 has a function
@@ -76,10 +71,9 @@ def install_deps():
             new_pkgs.append(resource.strip())
     return new_pkgs, links
 
-extras_require = {
-    's3': ['s3fs'],
-}
-extras_require['complete'] = sum(extras_require.values(), list())
+
+extras_require = {"s3": ["s3fs"]}
+extras_require["complete"] = sum(extras_require.values(), list())
 
 
 pkgs, new_links = install_deps()
@@ -90,29 +84,24 @@ setup_args = {
     "install_requires": pkgs,
     "dependency_links": new_links,
     "extras_require": extras_require,
-    'name': parser.get('package', 'name'),
-    'version': parser.get('package', 'version'),
-    'url': get_default(parser, 'package', 'url', None),
-    'author': get_default(parser, 'package', 'author', None),
-    'author_email': get_default(parser, 'package', 'author_email', None),
+    "name": parser.get("package", "name"),
+    "version": parser.get("package", "version"),
+    "url": get_default(parser, "package", "url", None),
+    "author": get_default(parser, "package", "author", None),
+    "author_email": get_default(parser, "package", "author_email", None),
 }
 
-if parser.has_section('console_scripts'):
-    scripts = [
-        '{0} = {1}'.format(opt, parser.get('console_scripts', opt))
-        for opt in parser.options('console_scripts')
-    ]
-    setup_args['entry_points'] = {'console_scripts': scripts}
+if parser.has_section("console_scripts"):
+    scripts = ["{0} = {1}".format(opt, parser.get("console_scripts", opt)) for opt in parser.options("console_scripts")]
+    setup_args["entry_points"] = {"console_scripts": scripts}
 
-if parser.has_section('extras_require'):
-    for opt in parser.options('extras_require'):
-        extras = [
-            x.strip() for x in parser.get('extras_require', opt).split(';') if x.strip()
-        ]
-        setup_args['extras_require'][opt] = extras
+if parser.has_section("extras_require"):
+    for opt in parser.options("extras_require"):
+        extras = [x.strip() for x in parser.get("extras_require", opt).split(";") if x.strip()]
+        setup_args["extras_require"][opt] = extras
 
 if src_dir:
-    setup_args['packages'] = setuptools.find_packages(src_dir, exclude=excl_dirs)
-    setup_args['provides'] = setuptools.find_packages(src_dir)
-    setup_args['package_dir'] = {'': src_dir}
+    setup_args["packages"] = setuptools.find_packages(src_dir, exclude=excl_dirs)
+    setup_args["provides"] = setuptools.find_packages(src_dir)
+    setup_args["package_dir"] = {"": src_dir}
 setuptools.setup(**setup_args)

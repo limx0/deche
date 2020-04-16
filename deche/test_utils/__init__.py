@@ -1,12 +1,9 @@
 import tempfile
 
-from fsspec.implementations.local import LocalFileSystem
-from fsspec.implementations.memory import MemoryFileSystem
-
 from deche.core import cache, CacheExpiryMode
 
-mem_fs = MemoryFileSystem()
-path = ''
+memory_cache = cache(fs_protocol="memory")
+path = ""
 
 
 class Class:
@@ -14,34 +11,38 @@ class Class:
         self.a = a
         self.b = b
 
-    @cache(fs=mem_fs)
+    @memory_cache
     def c(self):
         return self.a + self.b
 
 
-@cache(fs=mem_fs, prefix=path)
+@memory_cache.replace(prefix=path)
 def func(a, b, **kwargs):
     return a + b
 
 
-@cache(fs=mem_fs, prefix=path)
+@memory_cache.replace(prefix=path)
 def exc_func():
-    return 1/0
+    return 1 / 0
 
 
-tmp_fs = LocalFileSystem(auto_mkdir=True)
+fs_cache = cache(fs_protocol="file", fs_storage_options=dict(auto_mkdir=True))
 path = str(tempfile.mkdtemp())
 
 
-@cache(fs=tmp_fs, prefix=path, cache_ttl=0.1, cache_expiry_mode=CacheExpiryMode.REMOVE)
+@fs_cache.replace(prefix=path, cache_ttl=0.1, cache_expiry_mode=CacheExpiryMode.REMOVE)
 def func_ttl_expiry(a, b, **kwargs):
     return a + b
 
 
-@cache(fs=tmp_fs, prefix=path, cache_ttl=0.1, cache_expiry_mode=CacheExpiryMode.APPEND)
+@fs_cache.replace(prefix=path, cache_ttl=0.1, cache_expiry_mode=CacheExpiryMode.APPEND)
 def func_ttl_expiry_append(a, b, **kwargs):
     return a + b
 
 
 def identity(x):
     return x
+
+
+mem_fs = memory_cache.fs
+tmp_fs = fs_cache.fs

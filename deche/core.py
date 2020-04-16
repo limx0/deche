@@ -37,8 +37,8 @@ DEFAULT_VALIDATORS = (exists,)
 
 
 class Extensions:
-    inputs = '.inputs'
-    exception = '.exc'
+    inputs = ".inputs"
+    exception = ".exc"
 
 
 class CacheExpiryMode(Enum):
@@ -48,8 +48,10 @@ class CacheExpiryMode(Enum):
 
 @dataclass
 class _Cache:
-    fs: AbstractFileSystem = None
-    prefix: str = ''
+
+    fs_protocol: Optional[str] = None
+    fs_storage_options: Optional[dict] = None
+    prefix: str = ""
     input_serializer: Callable = cloudpickle.dumps
     input_deserializer: Callable = cloudpickle.loads
     output_serializer: Callable = cloudpickle.dumps
@@ -59,22 +61,36 @@ class _Cache:
     cache_validators: Tuple[Callable] = None
 
     def __post_init__(self):
-        if self.fs is None:
-            self.fs = filesystem(protocol=config.get('fs.protocol'), **config.get("fs.storage_options", {}))
+        self._fs = None
         if self.cache_validators is None:
             self.cache_validators = DEFAULT_VALIDATORS
         if isinstance(self.cache_ttl, datetime.timedelta):
             self.cache_ttl = self.cache_ttl.total_seconds()
         if self.cache_ttl is not None:
             self.cache_validators += (partial(has_passed_cache_ttl, cache_ttl=self.cache_ttl),)
-        if isinstance(self.fs, LocalFileSystem):
-            assert self.fs.auto_mkdir, "Set auto_mkdir=True when using LocalFileSystem so directories can be created"
+        if self.fs_protocol == "file":
+            assert (
+                "auto_mkdir" in self.fs_storage_options
+            ), "Set auto_mkdir=True when using LocalFileSystem so directories can be created"
+
+    @property
+    def fs(self):
+        if self._fs is None:
+            if self.fs_protocol is not None:
+                self._fs = filesystem(protocol=self.fs_protocol, **(self.fs_storage_options or {}))
+            # Try and load from config
+            elif config.refresh() is None and config.get("fs.protocol", False):
+                self._fs = filesystem(protocol=config["fs.protocol"], **(config.get("fs.storage_options", {})))
+        return self._fs
+
+    def _load_config(self):
+        return {"fs_protocol": config.get("fs.protocol"), "fs_storage_options": config.get("fs.storage_options")}
 
     def valid(self, path):
         return all((validator(fs=self.fs, path=path) for validator in self.cache_validators))
 
     def read(self, path):
-        with self.fs.open(path, mode='rb') as f:
+        with self.fs.open(path, mode="rb") as f:
             return f.read()
 
     def read_input(self, path, deserializer=None):
@@ -91,19 +107,19 @@ class _Cache:
         if self.cache_ttl and self.cache_expiry_mode == CacheExpiryMode.APPEND and not is_input_filename(path):
             # move any existing files
             key = pathlib.Path(path).name
-            for f in sorted(self.fs.glob(f'{path}*'), reverse=True):
+            for f in sorted(self.fs.glob(f"{path}*"), reverse=True):
                 if is_input_filename(f):
                     continue
                 if pathlib.Path(f).name == key:
                     num = 0
-                    suffix = ''
+                    suffix = ""
                 else:
-                    num = int(f.replace(f'{path}-', ""))
+                    num = int(f.replace(f"{path}-", ""))
                     f = f[:-2]
-                    suffix = f'-{num}'
-                self.fs.mv(f'{f}{suffix}', f'{f}-{num + 1}')
-        with self.fs.open(path, mode='wb') as f:
-            logger.debug(f'protocol:{self.fs.protocol}, path:{path}')
+                    suffix = f"-{num}"
+                self.fs.mv(f"{f}{suffix}", f"{f}-{num + 1}")
+        with self.fs.open(path, mode="wb") as f:
+            logger.debug(f"protocol:{self.fs.protocol}, path:{path}")
             return f.write(data)
 
     def write_input(self, path, inputs, input_serializer=None):
@@ -111,15 +127,13 @@ class _Cache:
         self.write(path=f"{path}{Extensions.inputs}", data=input_value)
 
     def write_output(self, path, output, output_serializer=None):
-        content_hash, output_value = tokenize(
-            obj=output, serializer=output_serializer or self.output_serializer
-        )
+        content_hash, output_value = tokenize(obj=output, serializer=output_serializer or self.output_serializer)
         self.write(path=path, data=output_value)
 
     def is_cached(self, path, func):
         def inner(*args, **kwargs):
             key = func.tokenize(*args, **kwargs)
-            return self.valid(path=f'{path}/{key}')
+            return self.valid(path=f"{path}/{key}")
 
         return inner
 
@@ -127,10 +141,9 @@ class _Cache:
     def is_exception(self, path, func):
         def inner(*args, **kwargs):
             key = tokenize_func(func)(*args, **kwargs)
-            return self.fs.exists(path=f'{path}/{key}{Extensions.exception}')
+            return self.fs.exists(path=f"{path}/{key}{Extensions.exception}")
 
         return inner
-
 
     # def is_exception(self, path, func):
     #     def inner(*args, **kwargs):
@@ -150,10 +163,10 @@ class _Cache:
 
     def _load(self, func, path, deserializer=None, ext=None):
         def load(*, key=None, kwargs=None):
-            assert (key is not None or kwargs is not None), "Must pass key or kwargs"
+            assert key is not None or kwargs is not None, "Must pass key or kwargs"
             if key is None:
                 key = func.tokenize(**kwargs)
-            logger.debug(f'protocol:{self.fs.protocol}, path:{path}')
+            logger.debug(f"protocol:{self.fs.protocol}, path:{path}")
             return self.read_output(path=f"{path}/{key}{ext or ''}", deserializer=deserializer)
 
         return load
@@ -164,6 +177,7 @@ class _Cache:
     def list_cached_data(self, path):
         def filter_(f):
             return not f.endswith(Extensions.inputs) or f.endswith(Extensions.exception)
+
         return self._list(path=path, ext=None, filter_=filter_)
 
     def list_cached_exceptions(self, path):
@@ -185,16 +199,16 @@ class _Cache:
         def inner(*args, **kwargs):
             inputs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs)
             key, _ = tokenize(obj=inputs)
-            if self.valid(path=f'{path}/{key}'):
+            if self.valid(path=f"{path}/{key}"):
                 return self.load_cached_data(func=func, path=path)(key=key)
             elif self.is_exception(path=path, func=func)(*args, **kwargs):
                 raise self.load_cached_exception(func=func, path=path)(key=key)
             try:
-                self.write_input(path=f'{path}/{key}', inputs=inputs)
+                self.write_input(path=f"{path}/{key}", inputs=inputs)
                 output = func(*args, **kwargs)
-                self.write_output(path=f'{path}/{key}', output=output)
+                self.write_output(path=f"{path}/{key}", output=output)
             except Exception as e:
-                self.write_output(path=f'{path}/{key}{Extensions.exception}', output=e)
+                self.write_output(path=f"{path}/{key}{Extensions.exception}", output=e)
                 raise e
 
             return output
