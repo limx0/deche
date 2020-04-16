@@ -91,6 +91,7 @@ class _Cache:
 
     def read(self, path):
         with self.fs.open(path, mode="rb") as f:
+            logger.debug(f"{self.fs.protocol}://{path}")
             return f.read()
 
     def read_input(self, path, deserializer=None):
@@ -162,14 +163,13 @@ class _Cache:
         return inner
 
     def _load(self, func, path, deserializer=None, ext=None):
-        def load(*, key=None, kwargs=None):
+        def inner(*, key=None, kwargs=None):
             assert key is not None or kwargs is not None, "Must pass key or kwargs"
             if key is None:
                 key = func.tokenize(**kwargs)
-            logger.debug(f"{self.fs.protocol}://{path}")
             return self.read_output(path=f"{path}/{key}{ext or ''}", deserializer=deserializer)
 
-        return load
+        return inner
 
     def list_cached_inputs(self, path):
         return self._list(path=path, ext=Extensions.inputs)
