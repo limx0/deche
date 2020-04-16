@@ -119,7 +119,7 @@ class _Cache:
                     suffix = f"-{num}"
                 self.fs.mv(f"{f}{suffix}", f"{f}-{num + 1}")
         with self.fs.open(path, mode="wb") as f:
-            logger.debug(f"protocol:{self.fs.protocol}, path:{path}")
+            logger.debug(f"{self.fs.protocol}://{path}")
             return f.write(data)
 
     def write_input(self, path, inputs, input_serializer=None):
@@ -166,7 +166,7 @@ class _Cache:
             assert key is not None or kwargs is not None, "Must pass key or kwargs"
             if key is None:
                 key = func.tokenize(**kwargs)
-            logger.debug(f"protocol:{self.fs.protocol}, path:{path}")
+            logger.debug(f"{self.fs.protocol}://{path}")
             return self.read_output(path=f"{path}/{key}{ext or ''}", deserializer=deserializer)
 
         return load
