@@ -2,6 +2,7 @@ import datetime
 import functools
 import hashlib
 import pathlib
+from loguru import logger
 from dataclasses import dataclass
 from enum import Enum
 from functools import partial
@@ -102,6 +103,7 @@ class _Cache:
                     suffix = f'-{num}'
                 self.fs.mv(f'{f}{suffix}', f'{f}-{num + 1}')
         with self.fs.open(path, mode='wb') as f:
+            logger.debug(f'protocol:{self.fs.protocol}, path:{path}')
             return f.write(data)
 
     def write_input(self, path, inputs, input_serializer=None):
@@ -147,13 +149,14 @@ class _Cache:
         return inner
 
     def _load(self, func, path, deserializer=None, ext=None):
-        def inner(*, key=None, kwargs=None):
+        def load(*, key=None, kwargs=None):
             assert (key is not None or kwargs is not None), "Must pass key or kwargs"
             if key is None:
                 key = func.tokenize(**kwargs)
+            logger.debug(f'protocol:{self.fs.protocol}, path:{path}')
             return self.read_output(path=f"{path}/{key}{ext or ''}", deserializer=deserializer)
 
-        return inner
+        return load
 
     def list_cached_inputs(self, path):
         return self._list(path=path, ext=Extensions.inputs)
