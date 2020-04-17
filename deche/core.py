@@ -51,7 +51,7 @@ class _Cache:
 
     fs_protocol: Optional[str] = None
     fs_storage_options: Optional[dict] = None
-    prefix: str = ""
+    prefix: Optional[str] = None
     input_serializer: Callable = cloudpickle.dumps
     input_deserializer: Callable = cloudpickle.loads
     output_serializer: Callable = cloudpickle.dumps
@@ -81,10 +81,9 @@ class _Cache:
             # Try and load from config
             elif config.refresh() is None and config.get("fs.protocol", False):
                 self._fs = filesystem(protocol=config["fs.protocol"], **(config.get("fs.storage_options", {})))
+                if config.get("fs.prefix", False):
+                    self.prefix = config["fs.prefix"]
         return self._fs
-
-    def _load_config(self):
-        return {"fs_protocol": config.get("fs.protocol"), "fs_storage_options": config.get("fs.storage_options")}
 
     def valid(self, path):
         return all((validator(fs=self.fs, path=path) for validator in self.cache_validators))
