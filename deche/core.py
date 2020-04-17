@@ -48,7 +48,6 @@ class CacheExpiryMode(Enum):
 
 @dataclass
 class _Cache:
-
     fs_protocol: Optional[str] = None
     fs_storage_options: Optional[dict] = None
     prefix: Optional[str] = None
@@ -100,7 +99,7 @@ class _Cache:
 
     def read(self, path):
         with self.fs.open(path, mode="rb") as f:
-            logger.debug(f"{self.fs.protocol}://{path}")
+            logger.debug(f"{self.fs_protocol}://{path}")
             return f.read()
 
     def read_input(self, path, deserializer=None):
@@ -202,10 +201,9 @@ class _Cache:
         return self._load(func=func, path=path, deserializer=deserializer, ext=Extensions.exception)
 
     def __call__(self, func):
-        path = f"{self.prefix}/{func.__module__}.{func.__name__}"
-
         @functools.wraps(func)
         def inner(*args, **kwargs):
+            path = f"{self.prefix}/{func.__module__}.{func.__name__}"
             inputs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs)
             key, _ = tokenize(obj=inputs)
             if self.valid(path=f"{path}/{key}"):
