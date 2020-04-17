@@ -79,11 +79,17 @@ class _Cache:
             if self.fs_protocol is not None:
                 self._fs = filesystem(protocol=self.fs_protocol, **(self.fs_storage_options or {}))
             # Try and load from config
-            elif config.refresh() is None and config.get("fs.protocol", False):
-                self._fs = filesystem(protocol=config["fs.protocol"], **(config.get("fs.storage_options", {})))
-                if config.get("fs.prefix", False):
-                    self.prefix = config["fs.prefix"]
+            else:
+                self._fs = self._load_from_config()
         return self._fs
+
+    def _load_from_config(self):
+        config.refresh()
+        if config.get("fs.protocol", None) is not None:
+            self.fs_protocol = config["fs.protocol"]
+            self.fs_storage_options = config.get("fs.storage_options", None)
+            self.prefix = config.get("fs.prefix", None)
+            return filesystem(protocol=config["fs.protocol"], **(config.get("fs.storage_options", {})))
 
     def valid(self, path):
         return all((validator(fs=self.fs, path=path) for validator in self.cache_validators))
