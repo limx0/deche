@@ -175,7 +175,7 @@ def test_cache_append(path):
 
 def test_cache_path(c: cache, path):
     func(1, 2)
-    assert func.path == "/deche.test_utils.func"
+    assert func.path() == "/deche.test_utils.func"
 
 
 def test_cache_exception(c: cache, path):
