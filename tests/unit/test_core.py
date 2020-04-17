@@ -35,6 +35,12 @@ def test_lazy_init():
     assert c.prefix == "/test"
 
 
+@pytest.mark.parametrize("prefix", ["/test", "/test/",])
+def test_prefix(prefix):
+    c = cache(prefix=prefix)
+    assert c.prefix == "/test"
+
+
 def test_key_deterministic(inputs, inputs_key):
     assert tokenize(inputs)[0] == inputs_key
 

@@ -2,19 +2,18 @@ import datetime
 import functools
 import hashlib
 import pathlib
-from loguru import logger
 from dataclasses import dataclass
 from enum import Enum
 from functools import partial
 from typing import Callable, Union, Tuple, Optional
 
 from cloudpickle import cloudpickle
-from fsspec import AbstractFileSystem, filesystem
-from fsspec.implementations.local import LocalFileSystem
+from fsspec import filesystem
+from loguru import logger
 
 from deche import config
 from deche.inspection import args_kwargs_to_kwargs
-from deche.util import is_input_filename, identity
+from deche.util import is_input_filename, identity, ensure_path
 from deche.validators import exists, has_passed_cache_ttl
 
 
@@ -71,6 +70,10 @@ class _Cache:
             assert (
                 "auto_mkdir" in self.fs_storage_options
             ), "Set auto_mkdir=True when using LocalFileSystem so directories can be created"
+        if self.fs_protocol:
+            self._fs = filesystem(protocol=self.fs_protocol, **(self.fs_storage_options or {}))
+        if self.prefix:
+            self.prefix = ensure_path(self.prefix)
 
     @property
     def fs(self):
@@ -79,20 +82,20 @@ class _Cache:
                 self._fs = filesystem(protocol=self.fs_protocol, **(self.fs_storage_options or {}))
             # Try and load from config
             else:
-                self._fs = self._load_from_config()
+                self._load_from_config()
         return self._fs
 
     def _load_from_config(self):
         config.refresh()
         if config.get("fs.protocol", None) is not None:
-            self.fs_protocol = config["fs.protocol"]
-            self.fs_storage_options = config.get("fs.storage_options", None)
-            self.prefix = config.get("fs.prefix", None)
             logger.debug("Initialising deche from config")
+            self.fs_protocol = config["fs.protocol"]
             logger.debug(f"fs_protocol: {self.fs_protocol}")
+            self.fs_storage_options = config.get("fs.storage_options", None)
             logger.debug(f"fs_storage_options: {self.fs_storage_options}")
+            self.prefix = ensure_path(config.get("fs.prefix", None))
             logger.debug(f"prefix: {self.prefix}")
-            return filesystem(protocol=config["fs.protocol"], **(config.get("fs.storage_options", {})))
+            self.__post_init__()
 
     def _path(self, func):
         return f"{self.prefix}/{func.__module__}.{func.__name__}"
@@ -131,7 +134,7 @@ class _Cache:
                     suffix = f"-{num}"
                 self.fs.mv(f"{f}{suffix}", f"{f}-{num + 1}")
         with self.fs.open(path, mode="wb") as f:
-            logger.debug(f"{self.fs.protocol}://{path}")
+            logger.debug(f"{self.fs_protocol}://{path}")
             return f.write(data)
 
     def write_input(self, path, inputs, input_serializer=None):
