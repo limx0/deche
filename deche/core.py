@@ -89,6 +89,10 @@ class _Cache:
             self.fs_protocol = config["fs.protocol"]
             self.fs_storage_options = config.get("fs.storage_options", None)
             self.prefix = config.get("fs.prefix", None)
+            logger.debug("Initialising deche from config")
+            logger.debug(f"fs_protocol: {self.fs_protocol}")
+            logger.debug(f"fs_storage_options: {self.fs_storage_options}")
+            logger.debug(f"prefix: {self.prefix}")
             return filesystem(protocol=config["fs.protocol"], **(config.get("fs.storage_options", {})))
 
     def valid(self, path):
