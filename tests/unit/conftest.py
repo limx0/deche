@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from deche.core import cache
@@ -19,6 +21,13 @@ def test_cleanup():
     for f in mem_fs.glob(path=f"/**/*"):
         if mem_fs.exists(f):
             mem_fs.rm(f)
+
+
+@pytest.fixture(scope="function", autouse=True)
+def env_cleanup():
+    for k in tuple(os.environ):
+        if k.startswith("DECHE_"):
+            del os.environ[k]
 
 
 @pytest.fixture()

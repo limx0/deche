@@ -18,7 +18,13 @@ def ensure_path(path):
     >>> ensure_path('hello/')
     'hello'
     """
-    defaults = {None: None}
+    defaults = {
+        None: None,
+        "/": "",
+        "": "",
+    }
+    if path in defaults:
+        return defaults[path]
     p = pathlib.Path(path)
     return str(p)
 

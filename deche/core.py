@@ -45,6 +45,10 @@ class CacheExpiryMode(Enum):
     APPEND = 2
 
 
+# TODO implement pickle serialisation/deserialisation for class w/ config refresh
+# TODO Clean up config load - classmethod?
+
+
 @dataclass
 class _Cache:
     fs_protocol: Optional[str] = None
@@ -72,7 +76,7 @@ class _Cache:
             ), "Set auto_mkdir=True when using LocalFileSystem so directories can be created"
         if self.fs_protocol:
             self._fs = filesystem(protocol=self.fs_protocol, **(self.fs_storage_options or {}))
-        if self.prefix:
+        if self.prefix is not None:
             self.prefix = ensure_path(self.prefix)
 
     @property
@@ -98,7 +102,10 @@ class _Cache:
             self.__post_init__()
 
     def _path(self, func):
-        return f"{self.prefix}/{func.__module__}.{func.__name__}"
+        if not self._fs:
+            self.fs
+        path = f"{func.__module__}.{func.__name__}"
+        return f"{self.prefix}/{path}" if self.prefix is not None else path
 
     def valid(self, path):
         return all((validator(fs=self.fs, path=path) for validator in self.cache_validators))
