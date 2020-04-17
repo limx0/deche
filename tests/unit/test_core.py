@@ -18,16 +18,19 @@ def test_init():
 def test_lazy_init():
     c = cache()
     assert c.fs is None
+    assert c.prefix is None
     os.environ.update(
         {
             "DECHE_FS__PROTOCOL": "s3",
             "DECHE_FS__STORAGE_OPTIONS__KEY": "key",
             "DECHE_FS__STORAGE_OPTIONS__SECRET": "secret",
+            "DECHE_FS__PREFIX": "/test",
         }
     )
     assert isinstance(c.fs, S3FileSystem)
     assert c.fs.key == "key"
     assert c.fs.secret == "secret"
+    assert c.prefix == "/test"
 
 
 def test_key_deterministic(inputs, inputs_key):
