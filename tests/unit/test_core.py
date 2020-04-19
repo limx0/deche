@@ -1,5 +1,6 @@
 import os
 import time
+from collections import Iterable
 from unittest import mock
 
 import pytest
@@ -18,16 +19,37 @@ def test_init():
 def test_lazy_init():
     c = cache()
     assert c.fs is None
+    assert c.prefix is None
     os.environ.update(
         {
             "DECHE_FS__PROTOCOL": "s3",
             "DECHE_FS__STORAGE_OPTIONS__KEY": "key",
             "DECHE_FS__STORAGE_OPTIONS__SECRET": "secret",
+            "DECHE_FS__PREFIX": "/test",
         }
     )
     assert isinstance(c.fs, S3FileSystem)
     assert c.fs.key == "key"
     assert c.fs.secret == "secret"
+    assert c.fs_protocol == "s3"
+    assert c.fs_storage_options == {"key": "key", "secret": "secret"}
+    assert c.prefix == "/test"
+
+
+def test_lazy_init_prefix():
+    c = cache()
+    assert c.prefix is None
+    assert c._path(func) == "deche.test_utils.func"
+    os.environ.update(
+        {"DECHE_FS__PROTOCOL": "memory", "DECHE_FS__PREFIX": "/test",}
+    )
+    assert c._path(func) == "/test/deche.test_utils.func"
+
+
+@pytest.mark.parametrize("prefix", ["/test", "/test/",])
+def test_prefix(prefix):
+    c = cache(prefix=prefix)
+    assert c.prefix == "/test"
 
 
 def test_key_deterministic(inputs, inputs_key):
@@ -107,6 +129,13 @@ def test_list_cached_exceptions():
     assert result == ["/deche.test_utils.exc_func/be51217c13e7165157585330ecb37a638ef58d32dd8ff4c5b1aadc0a59298f19.exc"]
 
 
+def test_iter():
+    func(3, 4, zzz=10)
+    result = func.iter_cached_inputs()
+    assert isinstance(result, Iterable)
+    assert next(result) == "745c3cd4d7f1e96bbc62406e2e0b65749c546ceea0629a37e25fdad123eee86e"
+
+
 def test_load_cached_inputs():
     expected = dict(a=3, b=4, zzz=10)
     func(**expected)
@@ -170,7 +199,7 @@ def test_cache_append(path):
 
 def test_cache_path(c: cache, path):
     func(1, 2)
-    assert func.path == "/deche.test_utils.func"
+    assert func.path() == "/deche.test_utils.func"
 
 
 def test_cache_exception(c: cache, path):

@@ -2,19 +2,18 @@ import datetime
 import functools
 import hashlib
 import pathlib
-from loguru import logger
 from dataclasses import dataclass
 from enum import Enum
 from functools import partial
 from typing import Callable, Union, Tuple, Optional
 
 from cloudpickle import cloudpickle
-from fsspec import AbstractFileSystem, filesystem
-from fsspec.implementations.local import LocalFileSystem
+from fsspec import filesystem
+from loguru import logger
 
 from deche import config
 from deche.inspection import args_kwargs_to_kwargs
-from deche.util import is_input_filename, identity
+from deche.util import is_input_filename, identity, ensure_path
 from deche.validators import exists, has_passed_cache_ttl
 
 
@@ -46,9 +45,16 @@ class CacheExpiryMode(Enum):
     APPEND = 2
 
 
+# TODO implement pickle serialisation/deserialisation for class w/ config refresh
+# TODO Clean up config load - classmethod?
+
+
+def data_filter(f):
+    return not f.endswith(Extensions.inputs) or f.endswith(Extensions.exception)
+
+
 @dataclass
 class _Cache:
-
     fs_protocol: Optional[str] = None
     fs_storage_options: Optional[dict] = None
     prefix: Optional[str] = None
@@ -72,6 +78,10 @@ class _Cache:
             assert (
                 "auto_mkdir" in self.fs_storage_options
             ), "Set auto_mkdir=True when using LocalFileSystem so directories can be created"
+        if self.fs_protocol:
+            self._fs = filesystem(protocol=self.fs_protocol, **(self.fs_storage_options or {}))
+        if self.prefix is not None:
+            self.prefix = ensure_path(self.prefix)
 
     @property
     def fs(self):
@@ -79,18 +89,34 @@ class _Cache:
             if self.fs_protocol is not None:
                 self._fs = filesystem(protocol=self.fs_protocol, **(self.fs_storage_options or {}))
             # Try and load from config
-            elif config.refresh() is None and config.get("fs.protocol", False):
-                self._fs = filesystem(protocol=config["fs.protocol"], **(config.get("fs.storage_options", {})))
-                if config.get("fs.prefix", False):
-                    self.prefix = config["fs.prefix"]
+            else:
+                self._load_from_config()
         return self._fs
+
+    def _load_from_config(self):
+        config.refresh()
+        if config.get("fs.protocol", None) is not None:
+            logger.debug("Initialising deche from config")
+            self.fs_protocol = config["fs.protocol"]
+            logger.debug(f"fs_protocol: {self.fs_protocol}")
+            self.fs_storage_options = config.get("fs.storage_options", None)
+            logger.debug(f"fs_storage_options: {self.fs_storage_options}")
+            self.prefix = ensure_path(config.get("fs.prefix", None))
+            logger.debug(f"prefix: {self.prefix}")
+            self.__post_init__()
+
+    def _path(self, func):
+        if not self._fs:
+            self.fs
+        path = f"{func.__module__}.{func.__name__}"
+        return f"{self.prefix}/{path}" if self.prefix is not None else path
 
     def valid(self, path):
         return all((validator(fs=self.fs, path=path) for validator in self.cache_validators))
 
     def read(self, path):
         with self.fs.open(path, mode="rb") as f:
-            logger.debug(f"{self.fs.protocol}://{path}")
+            logger.debug(f"{self.fs_protocol}://{path}")
             return f.read()
 
     def read_input(self, path, deserializer=None):
@@ -119,7 +145,7 @@ class _Cache:
                     suffix = f"-{num}"
                 self.fs.mv(f"{f}{suffix}", f"{f}-{num + 1}")
         with self.fs.open(path, mode="wb") as f:
-            logger.debug(f"{self.fs.protocol}://{path}")
+            logger.debug(f"{self.fs_protocol}://{path}")
             return f.write(data)
 
     def write_input(self, path, inputs, input_serializer=None):
@@ -130,78 +156,69 @@ class _Cache:
         content_hash, output_value = tokenize(obj=output, serializer=output_serializer or self.output_serializer)
         self.write(path=path, data=output_value)
 
-    def is_cached(self, path, func):
+    def is_cached(self, func):
         def inner(*args, **kwargs):
+            path = self._path(func)
             key = func.tokenize(*args, **kwargs)
             return self.valid(path=f"{path}/{key}")
 
         return inner
 
     # TODO This needs to be cleaned up
-    def is_exception(self, path, func):
+    def is_exception(self, func):
         def inner(*args, **kwargs):
             key = tokenize_func(func)(*args, **kwargs)
-            return self.fs.exists(path=f"{path}/{key}{Extensions.exception}")
+            return self.fs.exists(path=f"{self._path(func)}/{key}{Extensions.exception}")
 
         return inner
 
-    # def is_exception(self, path, func):
-    #     def inner(*args, **kwargs):
-    #         key = func.tokenize(*args, **kwargs)
-    #         return self.fs.exists(path=f'{path}/{key}{Extensions.exception}')
-    #
-    #     return inner
-
-    def _list(self, path, ext=None, filter_=identity):
+    def _iter(self, func, ext=None, filter_=identity):
         def inner(key_only=True):
-            files = list(filter(filter_, self.fs.glob(f"{path}/*{ext or ''}")))
+            path = self._path(func)
+            iterator = filter(filter_, self.fs.glob(f"{path}/*{ext or ''}"))
             if key_only:
-                files = [pathlib.Path(f).stem for f in files]
-            return files
+                iterator = map(lambda f: pathlib.Path(f).stem, iterator)
+            yield from iterator
 
         return inner
 
-    def _load(self, func, path, deserializer=None, ext=None):
+    def _list(self, func, ext=None, filter_=identity):
+        iter_inner = self._iter(func=func, ext=ext, filter_=filter_)
+
+        def inner(key_only=True):
+            return list(iter_inner(key_only=key_only))
+
+        return inner
+
+    def _load(self, func, deserializer=None, ext=None):
         def inner(*, key=None, kwargs=None):
             assert key is not None or kwargs is not None, "Must pass key or kwargs"
+            path = self._path(func)
             if key is None:
                 key = func.tokenize(**kwargs)
             return self.read_output(path=f"{path}/{key}{ext or ''}", deserializer=deserializer)
 
         return inner
 
-    def list_cached_inputs(self, path):
-        return self._list(path=path, ext=Extensions.inputs)
+    def load_cached_data(self, func, deserializer=None):
+        return self._load(func=func, deserializer=deserializer, ext=None)
 
-    def list_cached_data(self, path):
-        def filter_(f):
-            return not f.endswith(Extensions.inputs) or f.endswith(Extensions.exception)
+    def load_cached_inputs(self, func, deserializer=None):
+        return self._load(func=func, deserializer=deserializer, ext=Extensions.inputs)
 
-        return self._list(path=path, ext=None, filter_=filter_)
-
-    def list_cached_exceptions(self, path):
-        return self._list(path=path, ext=Extensions.exception)
-
-    def load_cached_data(self, func, path, deserializer=None):
-        return self._load(func=func, path=path, deserializer=deserializer, ext=None)
-
-    def load_cached_inputs(self, func, path, deserializer=None):
-        return self._load(func=func, path=path, deserializer=deserializer, ext=Extensions.inputs)
-
-    def load_cached_exception(self, func, path, deserializer=None):
-        return self._load(func=func, path=path, deserializer=deserializer, ext=Extensions.exception)
+    def load_cached_exception(self, func, deserializer=None):
+        return self._load(func=func, deserializer=deserializer, ext=Extensions.exception)
 
     def __call__(self, func):
-        path = f"{self.prefix}/{func.__module__}.{func.__name__}"
-
         @functools.wraps(func)
-        def inner(*args, **kwargs):
+        def wrapper(*args, **kwargs):
+            path = self._path(func=func)
             inputs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs)
             key, _ = tokenize(obj=inputs)
             if self.valid(path=f"{path}/{key}"):
-                return self.load_cached_data(func=func, path=path)(key=key)
-            elif self.is_exception(path=path, func=func)(*args, **kwargs):
-                raise self.load_cached_exception(func=func, path=path)(key=key)
+                return self.load_cached_data(func=func)(key=key)
+            elif self.is_exception(func=func)(*args, **kwargs):
+                raise self.load_cached_exception(func=func)(key=key)
             try:
                 self.write_input(path=f"{path}/{key}", inputs=inputs)
                 output = func(*args, **kwargs)
@@ -212,17 +229,21 @@ class _Cache:
 
             return output
 
-        inner.tokenize = tokenize_func(func=func)
-        inner.is_cached = self.is_cached(path=path, func=inner)
-        inner.is_exception = self.is_exception(path=path, func=inner)
-        inner.list_cached_data = self.list_cached_data(path=path)
-        inner.list_cached_inputs = self.list_cached_inputs(path=path)
-        inner.list_cached_exceptions = self.list_cached_exceptions(path=path)
-        inner.load_cached_inputs = self.load_cached_inputs(path=path, func=inner)
-        inner.load_cached_data = self.load_cached_data(path=path, func=inner)
-        inner.load_cached_exception = self.load_cached_exception(path=path, func=inner)
-        inner.path = path
-        return inner
+        wrapper.tokenize = tokenize_func(func=func)
+        wrapper.func = func
+        wrapper.is_cached = self.is_cached(func=wrapper)
+        wrapper.is_exception = self.is_exception(func=wrapper)
+        wrapper.list_cached_inputs = self._list(func=wrapper, ext=Extensions.inputs)
+        wrapper.list_cached_data = self._list(func=wrapper, filter_=data_filter)
+        wrapper.list_cached_exceptions = self._list(func=wrapper, ext=Extensions.exception)
+        wrapper.iter_cached_inputs = self._iter(func=wrapper, ext=Extensions.inputs)
+        wrapper.iter_cached_data = self._iter(func=wrapper, filter_=data_filter)
+        wrapper.iter_cached_exceptions = self._iter(func=wrapper, ext=Extensions.exception)
+        wrapper.load_cached_inputs = self.load_cached_inputs(func=wrapper)
+        wrapper.load_cached_data = self.load_cached_data(func=wrapper)
+        wrapper.load_cached_exception = self.load_cached_exception(func=wrapper)
+        wrapper.path = functools.partial(self._path, func=func)
+        return wrapper
 
     def replace(self, **kwargs):
         attrs = {k: getattr(self, k) for k in self.__dataclass_fields__}
