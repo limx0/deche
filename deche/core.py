@@ -49,6 +49,10 @@ class CacheExpiryMode(Enum):
 # TODO Clean up config load - classmethod?
 
 
+def data_filter(f):
+    return not f.endswith(Extensions.inputs) or f.endswith(Extensions.exception)
+
+
 @dataclass
 class _Cache:
     fs_protocol: Optional[str] = None
@@ -168,20 +172,21 @@ class _Cache:
 
         return inner
 
-    # def is_exception(self, path, func):
-    #     def inner(*args, **kwargs):
-    #         key = func.tokenize(*args, **kwargs)
-    #         return self.fs.exists(path=f'{path}/{key}{Extensions.exception}')
-    #
-    #     return inner
-
-    def _list(self, func, ext=None, filter_=identity):
+    def _iter(self, func, ext=None, filter_=identity):
         def inner(key_only=True):
             path = self._path(func)
-            files = list(filter(filter_, self.fs.glob(f"{path}/*{ext or ''}")))
+            iterator = filter(filter_, self.fs.glob(f"{path}/*{ext or ''}"))
             if key_only:
-                files = [pathlib.Path(f).stem for f in files]
-            return files
+                iterator = map(lambda f: pathlib.Path(f).stem, iterator)
+            yield from iterator
+
+        return inner
+
+    def _list(self, func, ext=None, filter_=identity):
+        iter_inner = self._iter(func=func, ext=ext, filter_=filter_)
+
+        def inner(key_only=True):
+            return list(iter_inner(key_only=key_only))
 
         return inner
 
@@ -194,18 +199,6 @@ class _Cache:
             return self.read_output(path=f"{path}/{key}{ext or ''}", deserializer=deserializer)
 
         return inner
-
-    def list_cached_inputs(self, func):
-        return self._list(func=func, ext=Extensions.inputs)
-
-    def list_cached_data(self, func):
-        def filter_(f):
-            return not f.endswith(Extensions.inputs) or f.endswith(Extensions.exception)
-
-        return self._list(func=func, ext=None, filter_=filter_)
-
-    def list_cached_exceptions(self, func):
-        return self._list(func=func, ext=Extensions.exception)
 
     def load_cached_data(self, func, deserializer=None):
         return self._load(func=func, deserializer=deserializer, ext=None)
@@ -240,9 +233,12 @@ class _Cache:
         wrapper.func = func
         wrapper.is_cached = self.is_cached(func=wrapper)
         wrapper.is_exception = self.is_exception(func=wrapper)
-        wrapper.list_cached_data = self.list_cached_data(func=wrapper)
-        wrapper.list_cached_inputs = self.list_cached_inputs(func=wrapper)
-        wrapper.list_cached_exceptions = self.list_cached_exceptions(func=wrapper)
+        wrapper.list_cached_inputs = self._list(func=wrapper, ext=Extensions.inputs)
+        wrapper.list_cached_data = self._list(func=wrapper, filter_=data_filter)
+        wrapper.list_cached_exceptions = self._list(func=wrapper, ext=Extensions.exception)
+        wrapper.iter_cached_inputs = self._iter(func=wrapper, ext=Extensions.inputs)
+        wrapper.iter_cached_data = self._iter(func=wrapper, filter_=data_filter)
+        wrapper.iter_cached_exceptions = self._iter(func=wrapper, ext=Extensions.exception)
         wrapper.load_cached_inputs = self.load_cached_inputs(func=wrapper)
         wrapper.load_cached_data = self.load_cached_data(func=wrapper)
         wrapper.load_cached_exception = self.load_cached_exception(func=wrapper)

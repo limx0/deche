@@ -1,5 +1,6 @@
 import os
 import time
+from collections import Iterable
 from unittest import mock
 
 import pytest
@@ -126,6 +127,13 @@ def test_list_cached_exceptions():
 
     result = exc_func.list_cached_exceptions(key_only=False)
     assert result == ["/deche.test_utils.exc_func/be51217c13e7165157585330ecb37a638ef58d32dd8ff4c5b1aadc0a59298f19.exc"]
+
+
+def test_iter():
+    func(3, 4, zzz=10)
+    result = func.iter_cached_inputs()
+    assert isinstance(result, Iterable)
+    assert next(result) == "745c3cd4d7f1e96bbc62406e2e0b65749c546ceea0629a37e25fdad123eee86e"
 
 
 def test_load_cached_inputs():
