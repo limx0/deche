@@ -200,12 +200,14 @@ class _Cache:
 
         return inner
 
-    def _remove(self, func, deserializer=None, ext=None):
+    def _remove(self, func, ext=None):
         def inner(*, key=None, kwargs=None):
             assert key is not None or kwargs is not None, "Must pass key or kwargs"
             path = self._path(func)
             if key is None:
                 key = func.tokenize(**kwargs)
+            if not self.fs.exists(path=f"{path}/{key}{ext or ''}"):
+                return
             return self.fs.rm(path=f"{path}/{key}{ext or ''}")
 
         return inner
@@ -219,14 +221,14 @@ class _Cache:
     def load_cached_exception(self, func, deserializer=None):
         return self._load(func=func, deserializer=deserializer, ext=Extensions.exception)
 
-    def remove_cached_data(self, func, deserializer=None):
-        return self._remove(func=func, deserializer=deserializer, ext=None)
+    def remove_cached_data(self, func):
+        return self._remove(func=func, ext=None)
 
-    def remove_cached_inputs(self, func, deserializer=None):
-        return self._remove(func=func, deserializer=deserializer, ext=Extensions.inputs)
+    def remove_cached_inputs(self, func):
+        return self._remove(func=func, ext=Extensions.inputs)
 
-    def remove_cached_exception(self, func, deserializer=None):
-        return self._remove(func=func, deserializer=deserializer, ext=Extensions.exception)
+    def remove_cached_exception(self, func):
+        return self._remove(func=func, ext=Extensions.exception)
 
     def __call__(self, func):
         @functools.wraps(func)
