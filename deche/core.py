@@ -200,6 +200,16 @@ class _Cache:
 
         return inner
 
+    def _remove(self, func, deserializer=None, ext=None):
+        def inner(*, key=None, kwargs=None):
+            assert key is not None or kwargs is not None, "Must pass key or kwargs"
+            path = self._path(func)
+            if key is None:
+                key = func.tokenize(**kwargs)
+            return self.fs.rm(path=f"{path}/{key}{ext or ''}")
+
+        return inner
+
     def load_cached_data(self, func, deserializer=None):
         return self._load(func=func, deserializer=deserializer, ext=None)
 
@@ -208,6 +218,15 @@ class _Cache:
 
     def load_cached_exception(self, func, deserializer=None):
         return self._load(func=func, deserializer=deserializer, ext=Extensions.exception)
+
+    def remove_cached_data(self, func, deserializer=None):
+        return self._remove(func=func, deserializer=deserializer, ext=None)
+
+    def remove_cached_inputs(self, func, deserializer=None):
+        return self._remove(func=func, deserializer=deserializer, ext=Extensions.inputs)
+
+    def remove_cached_exception(self, func, deserializer=None):
+        return self._remove(func=func, deserializer=deserializer, ext=Extensions.exception)
 
     def __call__(self, func):
         @functools.wraps(func)
@@ -242,6 +261,9 @@ class _Cache:
         wrapper.load_cached_inputs = self.load_cached_inputs(func=wrapper)
         wrapper.load_cached_data = self.load_cached_data(func=wrapper)
         wrapper.load_cached_exception = self.load_cached_exception(func=wrapper)
+        wrapper.remove_cached_inputs = self.remove_cached_inputs(func=wrapper)
+        wrapper.remove_cached_data = self.remove_cached_data(func=wrapper)
+        wrapper.remove_cached_exception = self.remove_cached_exception(func=wrapper)
         wrapper.path = functools.partial(self._path, func=func)
         return wrapper
 
