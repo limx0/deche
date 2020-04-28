@@ -212,24 +212,6 @@ class _Cache:
 
         return inner
 
-    def load_cached_data(self, func, deserializer=None):
-        return self._load(func=func, deserializer=deserializer, ext=None)
-
-    def load_cached_inputs(self, func, deserializer=None):
-        return self._load(func=func, deserializer=deserializer, ext=Extensions.inputs)
-
-    def load_cached_exception(self, func, deserializer=None):
-        return self._load(func=func, deserializer=deserializer, ext=Extensions.exception)
-
-    def remove_cached_data(self, func):
-        return self._remove(func=func, ext=None)
-
-    def remove_cached_inputs(self, func):
-        return self._remove(func=func, ext=Extensions.inputs)
-
-    def remove_cached_exception(self, func):
-        return self._remove(func=func, ext=Extensions.exception)
-
     def __call__(self, func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -237,9 +219,9 @@ class _Cache:
             inputs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs)
             key, _ = tokenize(obj=inputs)
             if self.valid(path=f"{path}/{key}"):
-                return self.load_cached_data(func=func)(key=key)
+                return self._load(func=func)(key=key)
             elif self.is_exception(func=func)(*args, **kwargs):
-                raise self.load_cached_exception(func=func)(key=key)
+                raise self._load(func=func, ext=Extensions.exception)(key=key)
             try:
                 self.write_input(path=f"{path}/{key}", inputs=inputs)
                 output = func(*args, **kwargs)
@@ -259,13 +241,13 @@ class _Cache:
         wrapper.list_cached_exceptions = self._list(func=wrapper, ext=Extensions.exception)
         wrapper.iter_cached_inputs = self._iter(func=wrapper, ext=Extensions.inputs)
         wrapper.iter_cached_data = self._iter(func=wrapper, filter_=data_filter)
-        wrapper.iter_cached_exceptions = self._iter(func=wrapper, ext=Extensions.exception)
-        wrapper.load_cached_inputs = self.load_cached_inputs(func=wrapper)
-        wrapper.load_cached_data = self.load_cached_data(func=wrapper)
-        wrapper.load_cached_exception = self.load_cached_exception(func=wrapper)
-        wrapper.remove_cached_inputs = self.remove_cached_inputs(func=wrapper)
-        wrapper.remove_cached_data = self.remove_cached_data(func=wrapper)
-        wrapper.remove_cached_exception = self.remove_cached_exception(func=wrapper)
+        wrapper.iter_cached_exception = self._iter(func=wrapper, ext=Extensions.exception)
+        wrapper.load_cached_inputs = self._load(func=wrapper, ext=Extensions.inputs)
+        wrapper.load_cached_data = self._load(func=wrapper)
+        wrapper.load_cached_exception = self._load(func=wrapper, ext=Extensions.exception)
+        wrapper.remove_cached_inputs = self._remove(func=wrapper, ext=Extensions.inputs)
+        wrapper.remove_cached_data = self._remove(func=wrapper)
+        wrapper.remove_cached_exceptions = self._remove(func=wrapper, ext=Extensions.exception)
         wrapper.path = functools.partial(self._path, func=func)
         return wrapper
 
