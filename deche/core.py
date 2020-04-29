@@ -12,8 +12,9 @@ from fsspec import filesystem
 from loguru import logger
 
 from deche import config
+from deche.enums import CacheVersion
 from deche.inspection import args_kwargs_to_kwargs
-from deche.util import is_input_filename, identity, ensure_path
+from deche.util import is_input_filename, identity, ensure_path, not_cache_append_file
 from deche.validators import exists, has_passed_cache_ttl
 
 
@@ -175,7 +176,9 @@ class _Cache:
     def _iter(self, func, ext=None, filter_=identity):
         def inner(key_only=True):
             path = self._path(func)
-            iterator = filter(filter_, self.fs.glob(f"{path}/*{ext or ''}"))
+            glob = self.fs.glob(f"{path}/*{ext or ''}")
+            iterator = filter(not_cache_append_file, glob)
+            iterator = filter(filter_, iterator)
             if key_only:
                 iterator = map(lambda f: pathlib.Path(f).stem, iterator)
             yield from iterator
@@ -190,7 +193,7 @@ class _Cache:
 
         return inner
 
-    def _load(self, func, deserializer=None, ext=None):
+    def _load(self, func, deserializer=None, ext=None, version=CacheVersion.LATEST):
         def inner(*, key=None, kwargs=None):
             assert key is not None or kwargs is not None, "Must pass key or kwargs"
             path = self._path(func)
@@ -200,14 +203,17 @@ class _Cache:
 
         return inner
 
-    def load_cached_data(self, func, deserializer=None):
-        return self._load(func=func, deserializer=deserializer, ext=None)
+    def _remove(self, func, ext=None):
+        def inner(*, key=None, kwargs=None):
+            assert key is not None or kwargs is not None, "Must pass key or kwargs"
+            path = self._path(func)
+            if key is None:
+                key = func.tokenize(**kwargs)
+            if not self.fs.exists(path=f"{path}/{key}{ext or ''}"):
+                return
+            return self.fs.rm(path=f"{path}/{key}{ext or ''}")
 
-    def load_cached_inputs(self, func, deserializer=None):
-        return self._load(func=func, deserializer=deserializer, ext=Extensions.inputs)
-
-    def load_cached_exception(self, func, deserializer=None):
-        return self._load(func=func, deserializer=deserializer, ext=Extensions.exception)
+        return inner
 
     def __call__(self, func):
         @functools.wraps(func)
@@ -216,9 +222,9 @@ class _Cache:
             inputs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs)
             key, _ = tokenize(obj=inputs)
             if self.valid(path=f"{path}/{key}"):
-                return self.load_cached_data(func=func)(key=key)
+                return self._load(func=func)(key=key)
             elif self.is_exception(func=func)(*args, **kwargs):
-                raise self.load_cached_exception(func=func)(key=key)
+                raise self._load(func=func, ext=Extensions.exception)(key=key)
             try:
                 self.write_input(path=f"{path}/{key}", inputs=inputs)
                 output = func(*args, **kwargs)
@@ -238,10 +244,13 @@ class _Cache:
         wrapper.list_cached_exceptions = self._list(func=wrapper, ext=Extensions.exception)
         wrapper.iter_cached_inputs = self._iter(func=wrapper, ext=Extensions.inputs)
         wrapper.iter_cached_data = self._iter(func=wrapper, filter_=data_filter)
-        wrapper.iter_cached_exceptions = self._iter(func=wrapper, ext=Extensions.exception)
-        wrapper.load_cached_inputs = self.load_cached_inputs(func=wrapper)
-        wrapper.load_cached_data = self.load_cached_data(func=wrapper)
-        wrapper.load_cached_exception = self.load_cached_exception(func=wrapper)
+        wrapper.iter_cached_exception = self._iter(func=wrapper, ext=Extensions.exception)
+        wrapper.load_cached_inputs = self._load(func=wrapper, ext=Extensions.inputs)
+        wrapper.load_cached_data = self._load(func=wrapper)
+        wrapper.load_cached_exception = self._load(func=wrapper, ext=Extensions.exception)
+        wrapper.remove_cached_inputs = self._remove(func=wrapper, ext=Extensions.inputs)
+        wrapper.remove_cached_data = self._remove(func=wrapper)
+        wrapper.remove_cached_exceptions = self._remove(func=wrapper, ext=Extensions.exception)
         wrapper.path = functools.partial(self._path, func=func)
         return wrapper
 
