@@ -9,6 +9,7 @@ from s3fs import S3FileSystem
 
 from deche.core import cache, tokenize
 from deche.test_utils import func, identity, func_ttl_expiry, func_ttl_expiry_append, exc_func, memory_cache
+from deche.types import FrozenDict
 
 
 def test_init():
@@ -181,20 +182,19 @@ def test_cache_ttl():
     assert not func_ttl_expiry.is_cached(1, 2)
 
 
-def test_cache_append(path):
-    func_ttl_expiry_append(1, 2)
-    assert func_ttl_expiry_append.is_cached(1, 2)
-    time.sleep(0.11)
-    func_ttl_expiry_append(1, 2)
-    time.sleep(0.11)
-    func_ttl_expiry_append(1, 2)
+def test_cache_append(path, cached_ttl_data):
     key = func_ttl_expiry_append.tokenize(1, 2)
     full_path = f"{path}/{func_ttl_expiry_append.__module__}.{func_ttl_expiry_append.__name__}"
-
     c = cache(fs_protocol="file", fs_storage_options={"auto_mkdir": True})
     assert c.fs.exists(path=f"{full_path}/{key}")
     assert c.fs.exists(path=f"{full_path}/{key}-1")
     assert c.fs.exists(path=f"{full_path}/{key}-2")
+    assert func_ttl_expiry_append.load_cached_inputs(key=key) == FrozenDict([("a", 1), ("b", 2)])
+
+
+def test_append_iter_files(path, cached_ttl_data):
+    keys = func_ttl_expiry_append.list_cached_data()
+    assert keys == ["c67ccd037985b77b72a0e615dff47aeb231650b6238d3c735074e35fb0d8c182"]
 
 
 def test_cache_path(c: cache, path):

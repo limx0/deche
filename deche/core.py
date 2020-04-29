@@ -12,8 +12,9 @@ from fsspec import filesystem
 from loguru import logger
 
 from deche import config
+from deche.enums import CacheVersion
 from deche.inspection import args_kwargs_to_kwargs
-from deche.util import is_input_filename, identity, ensure_path
+from deche.util import is_input_filename, identity, ensure_path, not_cache_append_file
 from deche.validators import exists, has_passed_cache_ttl
 
 
@@ -175,7 +176,9 @@ class _Cache:
     def _iter(self, func, ext=None, filter_=identity):
         def inner(key_only=True):
             path = self._path(func)
-            iterator = filter(filter_, self.fs.glob(f"{path}/*{ext or ''}"))
+            glob = self.fs.glob(f"{path}/*{ext or ''}")
+            iterator = filter(not_cache_append_file, glob)
+            iterator = filter(filter_, iterator)
             if key_only:
                 iterator = map(lambda f: pathlib.Path(f).stem, iterator)
             yield from iterator
@@ -190,7 +193,7 @@ class _Cache:
 
         return inner
 
-    def _load(self, func, deserializer=None, ext=None):
+    def _load(self, func, deserializer=None, ext=None, version=CacheVersion.LATEST):
         def inner(*, key=None, kwargs=None):
             assert key is not None or kwargs is not None, "Must pass key or kwargs"
             path = self._path(func)

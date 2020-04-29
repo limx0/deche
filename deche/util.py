@@ -1,6 +1,7 @@
 import hashlib
 import inspect
 import pathlib
+import re
 
 
 def is_input_filename(key):
@@ -45,5 +46,21 @@ def func_qualname(func):
 
 
 def identity(x):
-    """Identitfy function"""
+    """Identity function"""
     return x
+
+
+pat = re.compile(".*-\d+")
+
+
+def not_cache_append_file(f):
+    """
+    Boolean filter for if `f` if a Cache.APPEND file
+    >>> not_cache_append_file(f='07f65922d8e59a3da8e06d702d1d243dc7e186fea9783d94dec2cc8ddc0b9618')
+    True
+    >>> not_cache_append_file(f='07f65922d8e59a3da8e06d702d1d243dc7e186fea9783d94dec2cc8ddc0b9618-1')
+    False
+    >>> not_cache_append_file(f='07f65922d8e59a3da8e06d702d1d243dc7e186fea9783d94dec2cc8ddc0b9618-135')
+    False
+    """
+    return not bool(re.search(pattern=pat, string=f))

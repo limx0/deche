@@ -1,9 +1,10 @@
 import os
+import time
 
 import pytest
 
 from deche.core import cache
-from deche.test_utils import memory_cache, mem_fs, path as cache_path, exc_func
+from deche.test_utils import memory_cache, mem_fs, path as cache_path, exc_func, func_ttl_expiry_append
 from deche.types import FrozenDict
 
 
@@ -61,3 +62,13 @@ def cached_exception():
         exc_func()
     except ZeroDivisionError:
         pass
+
+
+@pytest.fixture(scope="function")
+def cached_ttl_data():
+    func_ttl_expiry_append(1, 2)
+    assert func_ttl_expiry_append.is_cached(1, 2)
+    time.sleep(0.11)
+    func_ttl_expiry_append(1, 2)
+    time.sleep(0.11)
+    func_ttl_expiry_append(1, 2)
