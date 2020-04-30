@@ -227,9 +227,12 @@ class _Cache:
                 raise self._load(func=func, ext=Extensions.exception)(key=key)
             try:
                 self.write_input(path=f"{path}/{key}", inputs=inputs)
+                logger.debug(f"Calling {func}")
                 output = func(*args, **kwargs)
+                logger.debug(f"Function {func} ran successfully")
                 self.write_output(path=f"{path}/{key}", output=output)
             except Exception as e:
+                logger.debug(f"Function {func} raised {e}")
                 self.write_output(path=f"{path}/{key}{Extensions.exception}", output=e)
                 raise e
 
@@ -250,7 +253,7 @@ class _Cache:
         wrapper.load_cached_exception = self._load(func=wrapper, ext=Extensions.exception)
         wrapper.remove_cached_inputs = self._remove(func=wrapper, ext=Extensions.inputs)
         wrapper.remove_cached_data = self._remove(func=wrapper)
-        wrapper.remove_cached_exceptions = self._remove(func=wrapper, ext=Extensions.exception)
+        wrapper.remove_cached_exception = self._remove(func=wrapper, ext=Extensions.exception)
         wrapper.path = functools.partial(self._path, func=func)
         return wrapper
 
