@@ -2,6 +2,7 @@ import hashlib
 import inspect
 import pathlib
 import re
+from functools import partial, update_wrapper
 
 
 def is_input_filename(key):
@@ -64,3 +65,9 @@ def not_cache_append_file(f):
     False
     """
     return not bool(re.search(pattern=pat, string=f))
+
+
+def wrapped_partial(func, *args, **kwargs):
+    partial_func = partial(func, *args, **kwargs)
+    update_wrapper(partial_func, func)
+    return partial_func

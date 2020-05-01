@@ -92,10 +92,10 @@ def test_func_tokenize(inputs, inputs_key):
     assert key == inputs_key
 
 
-def test_func_is_cached():
+def test_func_is_valid():
     func(3, 4, zzz=10)
-    assert func.is_cached(3, 4, zzz=10)
-    assert func.is_cached(b=4, a=3, zzz=10)
+    assert func.is_valid(3, 4, zzz=10)
+    assert func.is_valid(b=4, a=3, zzz=10)
 
 
 def test_list_cached_inputs():
@@ -110,7 +110,7 @@ def test_list_cached_inputs():
 
 def test_list_cached_data():
     func(3, 4, zzz=10)
-    assert func.is_cached(3, 4, zzz=10)
+    assert func.is_valid(3, 4, zzz=10)
     result = func.list_cached_data()
     assert result == ["745c3cd4d7f1e96bbc62406e2e0b65749c546ceea0629a37e25fdad123eee86e"]
 
@@ -150,7 +150,7 @@ def test_load_cached_inputs():
 
 def test_load_cached_data():
     expected = func(3, 4, zzz=10)
-    assert func.is_cached(3, 4, zzz=10)
+    assert func.is_valid(3, 4, zzz=10)
     result = func.load_cached_data(kwargs={"a": 3, "b": 4, "zzz": 10})
     assert expected == result == func(3, 4, zzz=10)
 
@@ -177,9 +177,9 @@ def test_load_cached_exception():
 
 def test_cache_ttl():
     func_ttl_expiry(1, 2)
-    assert func_ttl_expiry.is_cached(1, 2)
+    assert func_ttl_expiry.is_valid(1, 2)
     time.sleep(0.11)
-    assert not func_ttl_expiry.is_cached(1, 2)
+    assert not func_ttl_expiry.is_valid(1, 2)
 
 
 def test_cache_append(path, cached_ttl_data):
@@ -232,5 +232,12 @@ def test_failing_validator():
     def func():
         return 1
 
-    with pytest.raises(Exception) as e:
-        assert e.value == "Validator Failed"
+    assert not func.is_valid()
+    assert func() == 1
+
+
+def test_cache_replace():
+    c1 = cache(fs_protocol="memory", cache_ttl=10)
+    assert c1.cache_ttl == 10
+    c2 = c1.replace(cache_ttl=20)
+    assert c2.cache_ttl == 20

@@ -14,7 +14,7 @@ from loguru import logger
 from deche import config
 from deche.enums import CacheVersion
 from deche.inspection import args_kwargs_to_kwargs
-from deche.util import is_input_filename, identity, ensure_path, not_cache_append_file
+from deche.util import is_input_filename, identity, ensure_path, not_cache_append_file, wrapped_partial
 from deche.validators import exists, has_passed_cache_ttl
 
 
@@ -74,7 +74,7 @@ class _Cache:
         if isinstance(self.cache_ttl, datetime.timedelta):
             self.cache_ttl = self.cache_ttl.total_seconds()
         if self.cache_ttl is not None:
-            self.cache_validators += (partial(has_passed_cache_ttl, cache_ttl=self.cache_ttl),)
+            self.cache_validators += (wrapped_partial(has_passed_cache_ttl, cache_ttl=self.cache_ttl),)
         if self.fs_protocol == "file":
             assert (
                 "auto_mkdir" in self.fs_storage_options
@@ -83,6 +83,9 @@ class _Cache:
             self._fs = filesystem(protocol=self.fs_protocol, **(self.fs_storage_options or {}))
         if self.prefix is not None:
             self.prefix = ensure_path(self.prefix)
+        for validator in self.cache_validators:
+            err = "Validator must have __name__ attr, if using `functools.partial, consider using `wrapper_partial1"
+            assert hasattr(validator, "__name__"), err
 
     @property
     def fs(self):
@@ -113,7 +116,14 @@ class _Cache:
         return f"{self.prefix}/{path}" if self.prefix is not None else path
 
     def valid(self, path):
-        return all((validator(fs=self.fs, path=path) for validator in self.cache_validators))
+        validator = None
+        try:
+            for validator in self.cache_validators:
+                assert validator(fs=self.fs, path=path), "Validation not True"
+            return True
+        except Exception as e:
+            logger.debug(f"{path} Validator:{validator.__name__} failed with Exception: {e}")
+            return False
 
     def read(self, path):
         with self.fs.open(path, mode="rb") as f:
@@ -157,7 +167,7 @@ class _Cache:
         content_hash, output_value = tokenize(obj=output, serializer=output_serializer or self.output_serializer)
         self.write(path=path, data=output_value)
 
-    def is_cached(self, func):
+    def is_valid(self, func):
         def inner(*args, **kwargs):
             path = self._path(func)
             key = func.tokenize(*args, **kwargs)
@@ -240,7 +250,7 @@ class _Cache:
 
         wrapper.tokenize = tokenize_func(func=func)
         wrapper.func = func
-        wrapper.is_cached = self.is_cached(func=wrapper)
+        wrapper.is_valid = self.is_valid(func=wrapper)
         wrapper.is_exception = self.is_exception(func=wrapper)
         wrapper.list_cached_inputs = self._list(func=wrapper, ext=Extensions.inputs)
         wrapper.list_cached_data = self._list(func=wrapper, filter_=data_filter)
