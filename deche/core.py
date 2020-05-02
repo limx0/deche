@@ -177,11 +177,13 @@ class _Cache:
 
         return inner
 
-    # TODO This needs to be cleaned up
-    def is_exception(self, func):
-        def inner(*args, **kwargs):
-            key = tokenize_func(func)(*args, **kwargs)
-            return self.fs.exists(path=f"{self._path(func)}/{key}{Extensions.exception}")
+    def _exists(self, func, ext=None):
+        def inner(*, key=None, kwargs=None):
+            assert key is not None or kwargs is not None, "Must pass key or kwargs"
+            path = self._path(func)
+            if key is None:
+                key = func.tokenize(**kwargs)
+            return self.fs.exists(path=f"{path}/{key}{ext or ''}")
 
         return inner
 
@@ -235,7 +237,7 @@ class _Cache:
             key, _ = tokenize(obj=inputs)
             if self.valid(path=f"{path}/{key}"):
                 return self._load(func=func)(key=key)
-            elif self.is_exception(func=func)(*args, **kwargs):
+            elif self._exists(func=func, ext=Extensions.exception)(key=key):
                 raise self._load(func=func, ext=Extensions.exception)(key=key)
             try:
                 self.write_input(path=f"{path}/{key}", inputs=inputs)
@@ -253,7 +255,9 @@ class _Cache:
         wrapper.tokenize = tokenize_func(func=func)
         wrapper.func = func
         wrapper.is_valid = self.is_valid(func=wrapper)
-        wrapper.is_exception = self.is_exception(func=wrapper)
+        wrapper.has_inputs = self._exists(func=wrapper, ext=Extensions.inputs)
+        wrapper.has_data = self._exists(func=wrapper)
+        wrapper.has_exception = self._exists(func=wrapper, ext=Extensions.exception)
         wrapper.list_cached_inputs = self._list(func=wrapper, ext=Extensions.inputs)
         wrapper.list_cached_data = self._list(func=wrapper, filter_=data_filter)
         wrapper.list_cached_exceptions = self._list(func=wrapper, ext=Extensions.exception)
