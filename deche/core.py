@@ -4,7 +4,6 @@ import hashlib
 import pathlib
 from dataclasses import dataclass
 from enum import Enum
-from functools import partial
 from typing import Callable, Union, Tuple, Optional
 
 from cloudpickle import cloudpickle
@@ -84,7 +83,10 @@ class _Cache:
         if self.prefix is not None:
             self.prefix = ensure_path(self.prefix)
         for validator in self.cache_validators:
-            err = "Validator must have __name__ attr, if using `functools.partial, consider using `wrapper_partial1"
+            err = (
+                f"Validator: {validator} must have __name__ attr, if using `functools.partial, "
+                f"consider using `deche.util.wrapper_partial`"
+            )
             assert hasattr(validator, "__name__"), err
 
     @property
