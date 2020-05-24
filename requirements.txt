@@ -1,13 +1,9 @@
-#fsspec~=0.6.0 - awaiting https://github.com/intake/filesystem_spec/pull/268
-#s3fs - awaiting https://github.com/dask/s3fs/pull/311
-git+https://github.com/limx0/filesystem_spec.git@feature/modified#egg=fsspec
-git+https://github.com/limx0/s3fs.git@feature/modified#egg=s3fs
+fsspec~=0.7.3
+#s3fs - awaiting a release
+git+https://github.com/dask/s3fs.git@4fa94a1#egg=s3fs
 docker
 minio
 astor
 cloudpickle
 donfig
 loguru
-
-pytest
-pytest-mock
