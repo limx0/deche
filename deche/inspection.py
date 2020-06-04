@@ -5,7 +5,7 @@ from deche.types import FrozenDict
 
 def get_func_signature(f):
     spec = inspect.getfullargspec(f)
-    assert not spec.varargs
+    assert spec.varargs in (None, "_")
     return inspect.signature(f)
 
 

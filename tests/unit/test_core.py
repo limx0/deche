@@ -241,3 +241,11 @@ def test_cache_replace():
     assert c1.cache_ttl == 10
     c2 = c1.replace(cache_ttl=20)
     assert c2.cache_ttl == 20
+
+
+def test_no_varargs_okay(c: cache):
+    @c
+    def add(*_, a, b):
+        return a + b
+
+    assert add(a=1, b=1)
