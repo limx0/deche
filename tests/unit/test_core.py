@@ -243,6 +243,15 @@ def test_cache_replace():
     assert c2.cache_ttl == 20
 
 
+def test_varargs_assertion(c: cache):
+    @c
+    def add(a, *b):
+        return a + sum(b)
+
+    with pytest.raises(AssertionError):
+        assert add(a=1, b=1)
+
+
 def test_no_varargs_okay(c: cache):
     @c
     def add(*_, a, b):
