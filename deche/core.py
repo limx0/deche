@@ -2,11 +2,13 @@ import datetime
 import functools
 import hashlib
 import pathlib
+import pickle
 from dataclasses import dataclass
 from enum import Enum
+from functools import partial
 from typing import Callable, Union, Tuple, Optional
 
-from cloudpickle import cloudpickle
+import cloudpickle
 from fsspec import filesystem
 from loguru import logger
 
@@ -16,8 +18,11 @@ from deche.inspection import args_kwargs_to_kwargs
 from deche.util import is_input_filename, identity, ensure_path, not_cache_append_file, wrapped_partial
 from deche.validators import exists, has_passed_cache_ttl
 
+DEFAULT_SERIALIZER = partial(cloudpickle.dumps, protocol=pickle.DEFAULT_PROTOCOL)
+DEFAULT_DESERIALIZER = partial(cloudpickle.loads)
 
-def tokenize(obj: object, serializer: Callable = cloudpickle.dumps) -> (str, bytes):
+
+def tokenize(obj: object, serializer: Callable = DEFAULT_SERIALIZER) -> (str, bytes):
     value = serializer(obj)
     key = hashlib.sha256(value).hexdigest()
     return key, value
@@ -58,10 +63,10 @@ class _Cache:
     fs_protocol: Optional[str] = None
     fs_storage_options: Optional[dict] = None
     prefix: Optional[str] = None
-    input_serializer: Callable = cloudpickle.dumps
-    input_deserializer: Callable = cloudpickle.loads
-    output_serializer: Callable = cloudpickle.dumps
-    output_deserializer: Callable = cloudpickle.loads
+    input_serializer: Callable = DEFAULT_SERIALIZER
+    input_deserializer: Callable = DEFAULT_DESERIALIZER
+    output_serializer: Callable = DEFAULT_SERIALIZER
+    output_deserializer: Callable = DEFAULT_DESERIALIZER
     cache_ttl: Optional[Union[datetime.timedelta, datetime.datetime, int]] = None
     cache_expiry_mode: CacheExpiryMode = CacheExpiryMode.REMOVE
     cache_validators: Tuple[Callable] = None
