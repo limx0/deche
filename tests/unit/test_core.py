@@ -47,6 +47,13 @@ def test_lazy_init_prefix():
     assert c._path(func) == "/test/deche.test_utils.func"
 
 
+def test_lazy_init_fs():
+    c = cache()
+    assert c.fs is None
+    os.environ.update({"DECHE_FS__PROTOCOL": "memory"})
+    assert isinstance(c.fs, MemoryFileSystem)
+
+
 @pytest.mark.parametrize("prefix", ["/test", "/test/",])
 def test_prefix(prefix):
     c = cache(prefix=prefix)

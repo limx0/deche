@@ -259,6 +259,7 @@ class _Cache:
 
         wrapper.tokenize = tokenize_func(func=func)
         wrapper.func = func
+        wrapper.fs = self.fs
         wrapper.is_valid = self.is_valid(func=wrapper)
         wrapper.has_inputs = self._exists(func=wrapper, ext=Extensions.inputs)
         wrapper.has_data = self._exists(func=wrapper)
