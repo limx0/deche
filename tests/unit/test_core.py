@@ -265,3 +265,11 @@ def test_no_varargs_okay(c: cache):
         return a + b
 
     assert add(a=1, b=1)
+
+
+def test_no_hashable_params(c: cache):
+    @c.replace(non_hashable_kwargs=["b"])
+    def add(*_, a, b):
+        return a + b
+
+    assert add.tokenize(a=1, b=1) == add.tokenize(a=1, b=5)
