@@ -28,9 +28,9 @@ def tokenize(obj: object, serializer: Callable = DEFAULT_SERIALIZER) -> (str, by
     return key, value
 
 
-def tokenize_func(func):
+def tokenize_func(func, ignore=None):
     def inner(*args, **kwargs):
-        full_kwargs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs)
+        full_kwargs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs, ignore=ignore)
         key, value = tokenize(obj=full_kwargs)
         return key
 
@@ -70,6 +70,7 @@ class _Cache:
     cache_ttl: Optional[Union[datetime.timedelta, datetime.datetime, int]] = None
     cache_expiry_mode: CacheExpiryMode = CacheExpiryMode.REMOVE
     cache_validators: Tuple[Callable] = None
+    non_hashable_kwargs: Optional[Tuple[str]] = None
 
     def __post_init__(self):
         self._fs = None
@@ -257,7 +258,7 @@ class _Cache:
 
             return output
 
-        wrapper.tokenize = tokenize_func(func=func)
+        wrapper.tokenize = tokenize_func(func=func, ignore=self.non_hashable_kwargs)
         wrapper.func = func
         wrapper.fs = self.fs
         wrapper.is_valid = self.is_valid(func=wrapper)
