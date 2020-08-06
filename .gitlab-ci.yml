@@ -13,7 +13,8 @@ stages:
 build:
   stage: build
   script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" .
+    - docker pull "$CI_REGISTRY_IMAGE:develop" || true
+    - docker build --cache-from "$CI_REGISTRY_IMAGE:develop" --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" .
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
 
 test:

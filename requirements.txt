@@ -1,9 +1,6 @@
 fsspec~=0.7.3
-#s3fs - awaiting a release
+# awaiting a release
 git+https://github.com/dask/s3fs.git@4fa94a1#egg=s3fs
-docker
-minio
-astor
 cloudpickle
 donfig
 loguru
