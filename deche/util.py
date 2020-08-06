@@ -51,7 +51,7 @@ def identity(x):
     return x
 
 
-pat = re.compile(".*-\d+")
+pat = re.compile(r".*-\d+")
 
 
 def not_cache_append_file(f):

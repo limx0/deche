@@ -1,6 +1,6 @@
 import os
 import time
-from collections import Iterable
+from collections.abc import Iterable
 from unittest import mock
 
 import pytest
