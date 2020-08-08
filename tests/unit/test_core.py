@@ -182,6 +182,7 @@ def test_load_cached_exception():
         assert isinstance(result, type(expected))
 
 
+@pytest.mark.local
 def test_cache_ttl():
     func_ttl_expiry(1, 2)
     assert func_ttl_expiry.is_valid(1, 2)
