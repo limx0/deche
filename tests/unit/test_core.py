@@ -182,7 +182,6 @@ def test_load_cached_exception():
         assert isinstance(result, type(expected))
 
 
-@pytest.mark.local
 def test_cache_ttl():
     func_ttl_expiry(1, 2)
     assert func_ttl_expiry.is_valid(1, 2)
@@ -190,6 +189,7 @@ def test_cache_ttl():
     assert not func_ttl_expiry.is_valid(1, 2)
 
 
+@pytest.mark.local
 def test_cache_append(path, cached_ttl_data):
     key = func_ttl_expiry_append.tokenize(1, 2)
     full_path = f"{path}/{func_ttl_expiry_append.__module__}.{func_ttl_expiry_append.__name__}"
@@ -200,17 +200,18 @@ def test_cache_append(path, cached_ttl_data):
     assert func_ttl_expiry_append.load_cached_inputs(key=key) == FrozenDict([("a", 1), ("b", 2)])
 
 
-def test_append_iter_files(path, cached_ttl_data):
+@pytest.mark.local
+def test_append_iter_files(cached_ttl_data):
     keys = func_ttl_expiry_append.list_cached_data()
     assert keys == ["c67ccd037985b77b72a0e615dff47aeb231650b6238d3c735074e35fb0d8c182"]
 
 
-def test_cache_path(c: cache, path):
+def test_cache_path(c: cache):
     func(1, 2)
     assert func.path() == "/deche.test_utils.func"
 
 
-def test_cache_exception(c: cache, path):
+def test_cache_exception(c: cache):
     try:
         exc_func()
     except ZeroDivisionError as e:
