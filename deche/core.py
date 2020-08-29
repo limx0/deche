@@ -1,6 +1,7 @@
 import datetime
 import functools
 import hashlib
+import logging
 import pathlib
 import pickle
 from dataclasses import dataclass
@@ -10,13 +11,14 @@ from typing import Callable, Union, Tuple, Optional
 
 import cloudpickle
 from fsspec import filesystem
-from loguru import logger
 
 from deche import config
 from deche.enums import CacheVersion
 from deche.inspection import args_kwargs_to_kwargs
 from deche.util import is_input_filename, identity, ensure_path, not_cache_append_file, wrapped_partial
 from deche.validators import exists, has_passed_cache_ttl
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_SERIALIZER = partial(cloudpickle.dumps, protocol=pickle.DEFAULT_PROTOCOL)
 DEFAULT_DESERIALIZER = partial(cloudpickle.loads)
