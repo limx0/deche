@@ -1,6 +1,5 @@
-fsspec~=0.7.3
-# awaiting a release
-git+https://github.com/dask/s3fs.git@4fa94a1#egg=s3fs
+fsspec~=0.8.0
+s3fs==0.5.0
 cloudpickle
 donfig
 loguru
