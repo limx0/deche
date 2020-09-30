@@ -241,7 +241,7 @@ class _Cache:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             path = self._path(func=func)
-            inputs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs)
+            inputs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs, ignore=self.non_hashable_kwargs)
             key, _ = tokenize(obj=inputs)
             if self.valid(path=f"{path}/{key}"):
                 return self._load(func=func)(key=key)
