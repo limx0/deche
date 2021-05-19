@@ -131,10 +131,10 @@ def test_list_cached_exceptions():
     except Exception as e:
         pass
     result = exc_func.list_cached_exceptions()
-    assert result == ["be51217c13e7165157585330ecb37a638ef58d32dd8ff4c5b1aadc0a59298f19"]
+    assert result == ["4a0eaeafe1596ad15b57e2d8825d0155fa8b041a08f2dccd38fc1a7fa1441e47"]
 
     result = exc_func.list_cached_exceptions(key_only=False)
-    assert result == ["/deche.test_utils.exc_func/be51217c13e7165157585330ecb37a638ef58d32dd8ff4c5b1aadc0a59298f19.exc"]
+    assert result == ["/deche.test_utils.exc_func/4a0eaeafe1596ad15b57e2d8825d0155fa8b041a08f2dccd38fc1a7fa1441e47.exc"]
 
 
 def test_iter():
@@ -180,6 +180,20 @@ def test_load_cached_exception():
         key = exc_func.tokenize()
         result = exc_func.load_cached_exception(key=key)
         assert isinstance(result, type(expected))
+
+
+# def test_remove_all_exceptions():
+#     try:
+#         exc_func(1)
+#     except:
+#         pass
+#     try:
+#         exc_func(2)
+#     except:
+#         pass
+#     assert len(exc_func.list_cached_exceptions()) == 2
+#     exc_func.remove_all_cached_exceptions()
+#     assert len(exc_func.list_cached_exceptions()) == 0
 
 
 @pytest.mark.local

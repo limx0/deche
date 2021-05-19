@@ -22,8 +22,8 @@ def func(a, b, **kwargs):
 
 
 @memory_cache.replace(prefix=path)
-def exc_func():
-    return 1 / 0
+def exc_func(x=None):
+    return x or 1 / 0
 
 
 fs_cache = cache(fs_protocol="file", fs_storage_options=dict(auto_mkdir=True))

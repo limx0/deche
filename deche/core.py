@@ -237,6 +237,14 @@ class _Cache:
 
         return inner
 
+    # def _remove_all(self, func, ext=None):
+    #     def inner():
+    #         list_inner = self._list(func=func, ext=ext)
+    #         for key in list_inner():
+    #             self._remove(func, ext=ext)(key=key)
+    #
+    #     return inner
+
     def __call__(self, func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -279,6 +287,7 @@ class _Cache:
         wrapper.remove_cached_inputs = self._remove(func=wrapper, ext=Extensions.inputs)
         wrapper.remove_cached_data = self._remove(func=wrapper)
         wrapper.remove_cached_exception = self._remove(func=wrapper, ext=Extensions.exception)
+        # wrapper.remove_all_cached_exceptions = self._remove_all(func=wrapper, ext=Extensions.exception)
         wrapper.path = functools.partial(self._path, func=func)
         return wrapper
 
