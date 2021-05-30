@@ -8,4 +8,4 @@ COPY test-requirements.txt /app/test-requirements.txt
 RUN pip install -r /app/requirements.txt -r /app/test-requirements.txt
 COPY . /app/
 WORKDIR /app
-RUN python setup.py install
+RUN pip install -e ".[s3]"
