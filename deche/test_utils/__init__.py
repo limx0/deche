@@ -1,6 +1,8 @@
 import tempfile
 
-from deche.core import cache, CacheExpiryMode
+from deche.core import CacheExpiryMode
+from deche.core import cache
+
 
 memory_cache = cache(fs_protocol="memory")
 path = ""

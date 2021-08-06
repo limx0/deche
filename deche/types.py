@@ -1,5 +1,5 @@
 import collections
-from typing import OrderedDict
+from typing import OrderedDict  # noqa: TYP001
 
 
 class FrozenDict(collections.Mapping):
@@ -30,7 +30,7 @@ class FrozenDict(collections.Mapping):
         return len(self._dict)
 
     def __repr__(self):
-        return "<%s %r>" % (self.__class__.__name__, self._dict)
+        return f"<{self.__class__.__name__}, {self._dict}>"
 
     def __hash__(self):
         if self._hash is None:
@@ -42,12 +42,12 @@ class FrozenDict(collections.Mapping):
 
 
 def singleton(cls):
-    """ decorator for a class to make a singleton out of it """
+    """decorator for a class to make a singleton out of it"""
     instances = {}
 
     def get_instance(*args, **kwargs):
-        """ creating or just return the one and only class instance.
-            The singleton depends on the parameters used in __init__ """
+        """creating or just return the one and only class instance.
+        The singleton depends on the parameters used in __init__"""
 
         from deche.inspection import args_kwargs_to_kwargs
 

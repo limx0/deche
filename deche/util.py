@@ -2,7 +2,8 @@ import hashlib
 import inspect
 import pathlib
 import re
-from functools import partial, update_wrapper
+from functools import partial
+from functools import update_wrapper
 
 
 def is_input_filename(key):
@@ -33,7 +34,7 @@ def ensure_path(path):
 
 def hash_clean_source(func, length=7):
     src = inspect.getsource(func).split("\n")
-    lines = [l.strip() for l in src if not l.startswith("@")]
+    lines = [line.strip() for line in src if not line.startswith("@")]
     clean_src = "\n".join(lines)
     return hashlib.sha256(clean_src)[:length]
 

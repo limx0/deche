@@ -7,7 +7,7 @@ import pickle
 from dataclasses import dataclass
 from enum import Enum
 from functools import partial
-from typing import Callable, Union, Tuple, Optional
+from typing import Callable, Optional, Tuple, Union
 
 import cloudpickle
 from fsspec import filesystem
@@ -15,8 +15,14 @@ from fsspec import filesystem
 from deche import config
 from deche.enums import CacheVersion
 from deche.inspection import args_kwargs_to_kwargs
-from deche.util import is_input_filename, identity, ensure_path, not_cache_append_file, wrapped_partial
-from deche.validators import exists, has_passed_cache_ttl
+from deche.util import ensure_path
+from deche.util import identity
+from deche.util import is_input_filename
+from deche.util import not_cache_append_file
+from deche.util import wrapped_partial
+from deche.validators import exists
+from deche.validators import has_passed_cache_ttl
+
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +30,7 @@ DEFAULT_SERIALIZER = partial(cloudpickle.dumps, protocol=pickle.DEFAULT_PROTOCOL
 DEFAULT_DESERIALIZER = partial(cloudpickle.loads)
 
 
-def tokenize(obj: object, serializer: Callable = DEFAULT_SERIALIZER) -> (str, bytes):
+def tokenize(obj: object, serializer: Callable = DEFAULT_SERIALIZER) -> Tuple[str, bytes]:
     value = serializer(obj)
     key = hashlib.sha256(value).hexdigest()
     return key, value
@@ -81,7 +87,9 @@ class _Cache:
         if isinstance(self.cache_ttl, datetime.timedelta):
             self.cache_ttl = self.cache_ttl.total_seconds()
         if self.cache_ttl is not None:
-            self.cache_validators += (wrapped_partial(has_passed_cache_ttl, cache_ttl=self.cache_ttl),)
+            self.cache_validators += (
+                wrapped_partial(has_passed_cache_ttl, cache_ttl=self.cache_ttl),
+            )
         if self.fs_protocol == "file":
             assert (
                 "auto_mkdir" in self.fs_storage_options
@@ -151,7 +159,11 @@ class _Cache:
         return deserializer(data)
 
     def write(self, path: str, data: bytes):
-        if self.cache_ttl and self.cache_expiry_mode == CacheExpiryMode.APPEND and not is_input_filename(path):
+        if (
+            self.cache_ttl
+            and self.cache_expiry_mode == CacheExpiryMode.APPEND
+            and not is_input_filename(path)
+        ):
             # move any existing files
             key = pathlib.Path(path).name
             for f in sorted(self.fs.glob(f"{path}*"), reverse=True):
@@ -170,11 +182,15 @@ class _Cache:
             return f.write(data)
 
     def write_input(self, path, inputs, input_serializer=None):
-        key, input_value = tokenize(obj=inputs, serializer=input_serializer or self.input_serializer)
+        key, input_value = tokenize(
+            obj=inputs, serializer=input_serializer or self.input_serializer
+        )
         self.write(path=f"{path}{Extensions.inputs}", data=input_value)
 
     def write_output(self, path, output, output_serializer=None):
-        content_hash, output_value = tokenize(obj=output, serializer=output_serializer or self.output_serializer)
+        content_hash, output_value = tokenize(
+            obj=output, serializer=output_serializer or self.output_serializer
+        )
         self.write(path=path, data=output_value)
 
     def is_valid(self, func):
@@ -249,7 +265,9 @@ class _Cache:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             path = self._path(func=func)
-            inputs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs, ignore=self.non_hashable_kwargs)
+            inputs = args_kwargs_to_kwargs(
+                func=func, args=args, kwargs=kwargs, ignore=self.non_hashable_kwargs
+            )
             key, _ = tokenize(obj=inputs)
             if self.valid(path=f"{path}/{key}"):
                 return self._load(func=func)(key=key)

@@ -4,7 +4,11 @@ import time
 import pytest
 
 from deche.core import cache
-from deche.test_utils import memory_cache, mem_fs, path as cache_path, exc_func, func_ttl_expiry_append
+from deche.test_utils import exc_func
+from deche.test_utils import func_ttl_expiry_append
+from deche.test_utils import mem_fs
+from deche.test_utils import memory_cache
+from deche.test_utils import path as cache_path
 from deche.types import FrozenDict
 
 
@@ -19,7 +23,7 @@ def cleanup(c: cache, path):
 @pytest.fixture(scope="function", autouse=True)
 def test_cleanup():
     yield
-    for f in mem_fs.glob(path=f"/**/*"):
+    for f in mem_fs.glob(path="/**/*"):
         if mem_fs.exists(f):
             mem_fs.rm(f)
 

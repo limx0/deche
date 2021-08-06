@@ -1,3 +1,0 @@
-donfig
-cloudpickle
-fsspec>=0.8.0

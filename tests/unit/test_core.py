@@ -7,8 +7,14 @@ import pytest
 from fsspec.implementations.memory import MemoryFileSystem
 from s3fs import S3FileSystem
 
-from deche.core import cache, tokenize
-from deche.test_utils import func, identity, func_ttl_expiry, func_ttl_expiry_append, exc_func, memory_cache
+from deche.core import cache
+from deche.core import tokenize
+from deche.test_utils import exc_func
+from deche.test_utils import func
+from deche.test_utils import func_ttl_expiry
+from deche.test_utils import func_ttl_expiry_append
+from deche.test_utils import identity
+from deche.test_utils import memory_cache
 from deche.types import FrozenDict
 
 
@@ -42,7 +48,10 @@ def test_lazy_init_prefix():
     assert c.prefix is None
     assert c._path(func) == "deche.test_utils.func"
     os.environ.update(
-        {"DECHE_FS__PROTOCOL": "memory", "DECHE_FS__PREFIX": "/test",}
+        {
+            "DECHE_FS__PROTOCOL": "memory",
+            "DECHE_FS__PREFIX": "/test",
+        }
     )
     assert c._path(func) == "/test/deche.test_utils.func"
 
@@ -54,7 +63,13 @@ def test_lazy_init_fs():
     assert isinstance(c.fs, MemoryFileSystem)
 
 
-@pytest.mark.parametrize("prefix", ["/test", "/test/",])
+@pytest.mark.parametrize(
+    "prefix",
+    [
+        "/test",
+        "/test/",
+    ],
+)
 def test_prefix(prefix):
     c = cache(prefix=prefix)
     assert c.prefix == "/test"
@@ -69,7 +84,10 @@ def test_input_serialization(inputs, inputs_key):
     assert key == inputs_key
     assert (
         value
-        == b"\x80\x04\x95\x9e\x00\x00\x00\x00\x00\x00\x00\x8c\x0bdeche.types\x94\x8c\nFrozenDict\x94\x93\x94)\x81\x94}\x94(\x8c\x05_dict\x94\x8c\x0bcollections\x94\x8c\x0bOrderedDict\x94\x93\x94)R\x94(\x8c\x01a\x94\x8c\x011\x94\x8c\x01b\x94K\x02\x8c\x01c\x94C\x013\x94u}\x94\x8c\x0e__orig_class__\x94\x8c\x06typing\x94\x8c\x0bOrderedDict\x94\x93\x94sb\x8c\x05_hash\x94Nub."
+        == b"\x80\x04\x95\x9e\x00\x00\x00\x00\x00\x00\x00\x8c\x0bdeche.types\x94\x8c\nFrozenDict\x94\x93\x94)\x81\x94}"
+        b"\x94(\x8c\x05_dict\x94\x8c\x0bcollections\x94\x8c\x0bOrderedDict\x94\x93\x94)R\x94(\x8c\x01a\x94\x8c\x011"
+        b"\x94\x8c\x01b\x94K\x02\x8c\x01c\x94C\x013\x94u}\x94\x8c\x0e__orig_class__\x94\x8c\x06typing\x94\x8c\x0b"
+        b"OrderedDict\x94\x93\x94sb\x8c\x05_hash\x94Nub."
     )
 
 
@@ -112,7 +130,9 @@ def test_list_cached_inputs():
     assert result == ["745c3cd4d7f1e96bbc62406e2e0b65749c546ceea0629a37e25fdad123eee86e"]
 
     result = func.list_cached_inputs(key_only=False)
-    assert result == ["/deche.test_utils.func/745c3cd4d7f1e96bbc62406e2e0b65749c546ceea0629a37e25fdad123eee86e.inputs"]
+    assert result == [
+        "/deche.test_utils.func/745c3cd4d7f1e96bbc62406e2e0b65749c546ceea0629a37e25fdad123eee86e.inputs"
+    ]
 
 
 def test_list_cached_data():
@@ -122,19 +142,21 @@ def test_list_cached_data():
     assert result == ["745c3cd4d7f1e96bbc62406e2e0b65749c546ceea0629a37e25fdad123eee86e"]
 
     result = func.list_cached_data(key_only=False)
-    assert result == ["/deche.test_utils.func/745c3cd4d7f1e96bbc62406e2e0b65749c546ceea0629a37e25fdad123eee86e"]
+    assert result == [
+        "/deche.test_utils.func/745c3cd4d7f1e96bbc62406e2e0b65749c546ceea0629a37e25fdad123eee86e"
+    ]
 
 
 def test_list_cached_exceptions():
-    try:
+    with pytest.raises(ZeroDivisionError):
         exc_func()
-    except Exception as e:
-        pass
     result = exc_func.list_cached_exceptions()
     assert result == ["4a0eaeafe1596ad15b57e2d8825d0155fa8b041a08f2dccd38fc1a7fa1441e47"]
 
     result = exc_func.list_cached_exceptions(key_only=False)
-    assert result == ["/deche.test_utils.exc_func/4a0eaeafe1596ad15b57e2d8825d0155fa8b041a08f2dccd38fc1a7fa1441e47.exc"]
+    assert result == [
+        "/deche.test_utils.exc_func/4a0eaeafe1596ad15b57e2d8825d0155fa8b041a08f2dccd38fc1a7fa1441e47.exc"
+    ]
 
 
 def test_iter():
