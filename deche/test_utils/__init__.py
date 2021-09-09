@@ -1,10 +1,10 @@
 import tempfile
 
+from deche.core import Cache
 from deche.core import CacheExpiryMode
-from deche.core import cache
 
 
-memory_cache = cache(fs_protocol="memory")
+memory_cache = Cache(fs_protocol="memory")
 path = ""
 
 
@@ -28,7 +28,7 @@ def exc_func(x=None):
     return x or 1 / 0
 
 
-fs_cache = cache(fs_protocol="file", fs_storage_options=dict(auto_mkdir=True))
+fs_cache = Cache(fs_protocol="file", fs_storage_options=dict(auto_mkdir=True))
 path = str(tempfile.mkdtemp())
 
 

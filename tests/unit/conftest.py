@@ -4,7 +4,7 @@ import time
 import pytest
 from frozendict import frozendict
 
-from deche.core import cache
+from deche.core import Cache
 from deche.test_utils import exc_func
 from deche.test_utils import func_ttl_expiry_append
 from deche.test_utils import mem_fs
@@ -13,7 +13,7 @@ from deche.test_utils import path as cache_path
 
 
 @pytest.fixture(scope="function", autouse=True)
-def cleanup(c: cache, path):
+def cleanup(c: Cache, path):
     files = list(c.fs.glob(f"{path}/**/*"))
     for f in files:
         if c.fs.exists(f):

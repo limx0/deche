@@ -8,7 +8,7 @@ from frozendict import frozendict
 from fsspec.implementations.memory import MemoryFileSystem
 from s3fs import S3FileSystem
 
-from deche.core import cache
+from deche.core import Cache
 from deche.core import tokenize
 from deche.test_utils import exc_func
 from deche.test_utils import func
@@ -19,12 +19,12 @@ from deche.test_utils import memory_cache
 
 
 def test_init():
-    c = cache(fs_protocol="memory")
+    c = Cache(fs_protocol="memory")
     assert isinstance(c.fs, MemoryFileSystem)
 
 
 def test_lazy_init():
-    c = cache()
+    c = Cache()
     assert c.fs is None
     assert c.prefix is None
     os.environ.update(
@@ -44,7 +44,7 @@ def test_lazy_init():
 
 
 def test_lazy_init_prefix():
-    c = cache()
+    c = Cache()
     assert c.prefix is None
     assert c._path(func) == "deche.test_utils.func"
     os.environ.update(
@@ -57,7 +57,7 @@ def test_lazy_init_prefix():
 
 
 def test_lazy_init_fs():
-    c = cache()
+    c = Cache()
     assert c.fs is None
     os.environ.update({"DECHE_FS__PROTOCOL": "memory"})
     assert isinstance(c.fs, MemoryFileSystem)
@@ -71,7 +71,7 @@ def test_lazy_init_fs():
     ],
 )
 def test_prefix(prefix):
-    c = cache(prefix=prefix)
+    c = Cache(prefix=prefix)
     assert c.prefix == "/test"
 
 
@@ -89,7 +89,7 @@ def test_input_serialization(inputs, inputs_key):
     assert value == expected
 
 
-def test_output_serialization(c: cache, output):
+def test_output_serialization(c: Cache, output):
     key, value = tokenize(output)
     assert key == "fbe752b7ad43eab170053c3f374f7bcb6ccc00bb9c0de57a324aeca3e45171bb"
     assert value == b"\x80\x04\x95\r\x00\x00\x00\x00\x00\x00\x00C\tsome data\x94."
@@ -228,7 +228,7 @@ def test_cache_ttl():
 def test_cache_append(path, cached_ttl_data):
     key = func_ttl_expiry_append.tokenize(1, 2)
     full_path = f"{path}/{func_ttl_expiry_append.__module__}.{func_ttl_expiry_append.__name__}"
-    c = cache(fs_protocol="file", fs_storage_options={"auto_mkdir": True})
+    c = Cache(fs_protocol="file", fs_storage_options={"auto_mkdir": True})
     assert c.fs.exists(path=f"{full_path}/{key}")
     assert c.fs.exists(path=f"{full_path}/{key}-1")
     assert c.fs.exists(path=f"{full_path}/{key}-2")
@@ -241,12 +241,12 @@ def test_append_iter_files(cached_ttl_data):
     assert keys == ["fc326182c3511a7bf7b77142f4eb1526c89f3419417923f0fd70c6c229d6d62c"]
 
 
-def test_cache_path(c: cache):
+def test_cache_path(c: Cache):
     func(1, 2)
     assert func.path() == "/deche.test_utils.func"
 
 
-def test_cache_exception(c: cache):
+def test_cache_exception(c: Cache):
     try:
         exc_func()
     except ZeroDivisionError as e:
@@ -259,7 +259,7 @@ def test_cached_exception_raises(cached_exception):
         exc_func()
 
 
-@mock.patch("deche.cache.write_output")
+@mock.patch("deche.Cache.write_output")
 def test_exception_no_run(mock_write_output, cached_exception):
     try:
         exc_func()
@@ -281,13 +281,13 @@ def test_failing_validator():
 
 
 def test_cache_replace():
-    c1 = cache(fs_protocol="memory", cache_ttl=10)
+    c1 = Cache(fs_protocol="memory", cache_ttl=10)
     assert c1.cache_ttl == 10
     c2 = c1.replace(cache_ttl=20)
     assert c2.cache_ttl == 20
 
 
-def test_varargs_assertion(c: cache):
+def test_varargs_assertion(c: Cache):
     @c
     def add(a, *b):
         return a + sum(b)
@@ -296,7 +296,7 @@ def test_varargs_assertion(c: cache):
         assert add(a=1, b=1)
 
 
-def test_no_varargs_okay(c: cache):
+def test_no_varargs_okay(c: Cache):
     @c
     def add(*_, a, b):
         return a + b
@@ -304,7 +304,7 @@ def test_no_varargs_okay(c: cache):
     assert add(a=1, b=1)
 
 
-def test_no_hashable_params(c: cache):
+def test_no_hashable_params(c: Cache):
     @c.replace(non_hashable_kwargs=["b"])
     def add(*_, a, b):
         return a + b

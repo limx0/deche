@@ -67,7 +67,7 @@ def data_filter(f):
 
 
 @dataclass
-class _Cache:
+class Cache:
     fs_protocol: Optional[str] = None
     fs_storage_options: Optional[dict] = None
     prefix: Optional[str] = None
@@ -312,8 +312,3 @@ class _Cache:
     def replace(self, **kwargs):
         attrs = {k: getattr(self, k) for k in self.__dataclass_fields__}
         return self.__class__(**{**attrs, **kwargs})
-
-
-# noinspection PyPep8Naming
-class cache(_Cache):
-    pass
