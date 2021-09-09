@@ -1,0 +1,50 @@
+import tempfile
+
+from deche.core import CacheExpiryMode
+from deche.core import cache
+
+
+memory_cache = cache(fs_protocol="memory")
+path = ""
+
+
+class Class:
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+    @memory_cache
+    def c(self):
+        return self.a + self.b
+
+
+@memory_cache.replace(prefix=path)
+def func(a, b, **kwargs):
+    return a + b
+
+
+@memory_cache.replace(prefix=path)
+def exc_func(x=None):
+    return x or 1 / 0
+
+
+fs_cache = cache(fs_protocol="file", fs_storage_options=dict(auto_mkdir=True))
+path = str(tempfile.mkdtemp())
+
+
+@fs_cache.replace(prefix=path, cache_ttl=0.1, cache_expiry_mode=CacheExpiryMode.REMOVE)
+def func_ttl_expiry(a, b, **kwargs):
+    return a + b
+
+
+@fs_cache.replace(prefix=path, cache_ttl=0.1, cache_expiry_mode=CacheExpiryMode.APPEND)
+def func_ttl_expiry_append(a, b, **kwargs):
+    return a + b
+
+
+def identity(x):
+    return x
+
+
+mem_fs = memory_cache.fs
+tmp_fs = fs_cache.fs
