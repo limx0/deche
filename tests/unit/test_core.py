@@ -128,9 +128,7 @@ def test_list_cached_inputs():
     assert result == ["9bbe6da38ae30e1f3f83a00868660b9621e9b25bcee26e1d63e917d275e5b1af"]
 
     result = func.list_cached_inputs(key_only=False)
-    assert result == [
-        "/deche.test_utils.func/9bbe6da38ae30e1f3f83a00868660b9621e9b25bcee26e1d63e917d275e5b1af.inputs"
-    ]
+    assert result == ["/deche.test_utils.func/9bbe6da38ae30e1f3f83a00868660b9621e9b25bcee26e1d63e917d275e5b1af.inputs"]
 
 
 def test_list_cached_data():
@@ -140,9 +138,7 @@ def test_list_cached_data():
     assert result == ["9bbe6da38ae30e1f3f83a00868660b9621e9b25bcee26e1d63e917d275e5b1af"]
 
     result = func.list_cached_data(key_only=False)
-    assert result == [
-        "/deche.test_utils.func/9bbe6da38ae30e1f3f83a00868660b9621e9b25bcee26e1d63e917d275e5b1af"
-    ]
+    assert result == ["/deche.test_utils.func/9bbe6da38ae30e1f3f83a00868660b9621e9b25bcee26e1d63e917d275e5b1af"]
 
 
 def test_list_cached_exceptions():
@@ -152,9 +148,7 @@ def test_list_cached_exceptions():
     assert result == ["fdfb4d86958b2cbdac8fedb55b18abb646c9fb11e77a5cd867b349b4251dcf6d"]
 
     result = exc_func.list_cached_exceptions(key_only=False)
-    assert result == [
-        "/deche.test_utils.exc_func/fdfb4d86958b2cbdac8fedb55b18abb646c9fb11e77a5cd867b349b4251dcf6d.exc"
-    ]
+    assert result == ["/deche.test_utils.exc_func/fdfb4d86958b2cbdac8fedb55b18abb646c9fb11e77a5cd867b349b4251dcf6d.exc"]
 
 
 def test_iter():
