@@ -1842,7 +1842,7 @@ s3 = ["s3fs"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "ad5fd9d4404e0475af3af6f46ff523cc509c6b2e137058d87f42f2f0d6cc4339"
+content-hash = "c515c05be011995542677dc8556a807f867733c2d423625179cbe67b92befd02"
 
 [metadata.files]
 aiobotocore = [
