@@ -1,4 +1,4 @@
-name: deploy
+name: docs
 
 on:
   # Trigger the workflow on push to main branch
@@ -49,7 +49,7 @@ jobs:
     # Build the book
     - name: Build the book
       run: |
-        poetry run jupyter-book build deche
+        poetry run jupyter-book build docs
 
     # Deploy the book's HTML to gh-pages branch
     - name: GitHub Pages action
