@@ -46,6 +46,10 @@ jobs:
     - name: Install build dependencies
       run: poetry install
 
+    # Export requirements.txt
+    - name: Export requirements.txt for binder
+      run: poetry export -f requirements.txt --output requirements.txt
+
     # Build the book
     - name: Build the book
       run: |
