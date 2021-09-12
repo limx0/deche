@@ -1,8 +1,5 @@
-  # Table of contents
-# Learn more at https://jupyterbook.org/customize/toc.html
-
-format: jb-article
+format: jb-book
 root: index
-sections:
+chapters:
 - file: 1_getting_started/getting_started
 - file: 2_user_guide/usage
