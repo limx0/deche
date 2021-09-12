@@ -94,3 +94,12 @@ repos:
             --ignore=C101 E203 E252 E402 D100 D101 D102 S101 S403 W503,
             --min-python-version=3.7.0,
         ]
+
+  - repo: local
+    hooks:
+    - id: export-requirements
+      name: Export requeriments.txt
+      language: system
+      pass_filenames: false
+      entry: poetry export --without-hashes -o requirements.txt
+      files: ^(pyproject.toml|poetry.lock)$
