@@ -304,3 +304,12 @@ def test_no_hashable_params(c: Cache):
         return a + b
 
     assert add.tokenize(a=1, b=1) == add.tokenize(a=1, b=5)
+
+
+def test_list_data_ignores_exception_file(c: Cache):
+    try:
+        exc_func()
+    except ZeroDivisionError:
+        pass
+    result = func.list_cached_data()
+    assert result == []

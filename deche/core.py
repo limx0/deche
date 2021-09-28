@@ -63,7 +63,7 @@ class CacheExpiryMode(Enum):
 
 
 def data_filter(f):
-    return not f.endswith(Extensions.inputs) or f.endswith(Extensions.exception)
+    return not (f.endswith(Extensions.inputs) or f.endswith(Extensions.exception))
 
 
 @dataclass
@@ -295,6 +295,7 @@ class Cache:
         wrapper.remove_cached_exception = self._remove(func=wrapper, ext=Extensions.exception)
         # wrapper.remove_all_cached_exceptions = self._remove_all(func=wrapper, ext=Extensions.exception)
         wrapper.path = functools.partial(self._path, func=func)
+        wrapper.deche = self
         return wrapper
 
     def replace(self, **kwargs):
