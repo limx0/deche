@@ -24,8 +24,8 @@ def func(a, b, **kwargs):
 
 
 @memory_cache.replace(prefix=path)
-def exc_func(x=None):
-    return x or 1 / 0
+def exc_func(x=1):
+    return x / 0
 
 
 fs_cache = Cache(fs_protocol="file", fs_storage_options=dict(auto_mkdir=True))
@@ -48,3 +48,8 @@ def identity(x):
 
 mem_fs = memory_cache.fs
 tmp_fs = fs_cache.fs
+
+
+# @memory_cache
+# async def async_func(a):
+#     return a

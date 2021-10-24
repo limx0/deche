@@ -95,6 +95,12 @@ def test_output_serialization(c: Cache, output):
     assert value == b"\x80\x04\x95\r\x00\x00\x00\x00\x00\x00\x00C\tsome data\x94."
 
 
+def test_read_input(c: Cache):
+    func(1, 2, x=5)
+    key = "ea68dd17a0216fe43359cbbc0bb814baf446fae361653b99c61a6d8026cc99a0"
+    assert func.load_cached_inputs(key=key) == frozendict({"a": 1, "b": 2, "x": 5})
+
+
 def test_write(c, path, inputs, output):
     key, _ = tokenize(obj=inputs)
     c.write_input(path=f"{path}/{key}", inputs=inputs)
@@ -145,10 +151,10 @@ def test_list_cached_exceptions():
     with pytest.raises(ZeroDivisionError):
         exc_func()
     result = exc_func.list_cached_exceptions()
-    assert result == ["fdfb4d86958b2cbdac8fedb55b18abb646c9fb11e77a5cd867b349b4251dcf6d"]
+    assert result == ["8de6da29b67dfb56712b6d946b689b590ceed2e37859bf380fb17fc54d8bcb05"]
 
     result = exc_func.list_cached_exceptions(key_only=False)
-    assert result == ["/deche.test_utils.exc_func/fdfb4d86958b2cbdac8fedb55b18abb646c9fb11e77a5cd867b349b4251dcf6d.exc"]
+    assert result == ["/deche.test_utils.exc_func/8de6da29b67dfb56712b6d946b689b590ceed2e37859bf380fb17fc54d8bcb05.exc"]
 
 
 def test_iter():
@@ -196,18 +202,24 @@ def test_load_cached_exception():
         assert isinstance(result, type(expected))
 
 
-# def test_remove_all_exceptions():
-#     try:
-#         exc_func(1)
-#     except:
-#         pass
-#     try:
-#         exc_func(2)
-#     except:
-#         pass
-#     assert len(exc_func.list_cached_exceptions()) == 2
-#     exc_func.remove_all_cached_exceptions()
-#     assert len(exc_func.list_cached_exceptions()) == 0
+def test_remove_all_exceptions():
+    try:
+        exc_func(1)
+    except ZeroDivisionError:
+        pass
+    try:
+        exc_func(2)
+    except ZeroDivisionError:
+        pass
+    assert len(exc_func.list_cached_exceptions()) == 2
+    exc_func.remove_all_cached_exceptions()
+    assert len(exc_func.list_cached_exceptions()) == 0
+
+
+def test_exists():
+    func(1, 2)
+    assert func.has_data(kwargs=dict(a=1, b=2))
+    assert func.has_data(key=func.tokenize(1, 2))
 
 
 @pytest.mark.local
@@ -313,3 +325,15 @@ def test_list_data_ignores_exception_file(c: Cache):
         pass
     result = func.list_cached_data()
     assert result == []
+
+
+# def test_async(c: Cache):
+#     @c
+#     async def test(a,b):
+#         return a + b
+#
+#     asyncio.run(test(1,2))
+#
+#     result = test.list_cached_data()
+#     expected = ['fc326182c3511a7bf7b77142f4eb1526c89f3419417923f0fd70c6c229d6d62c']
+#     assert result == expected

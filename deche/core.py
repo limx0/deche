@@ -85,13 +85,9 @@ class Cache:
         if self.cache_validators is None:
             self.cache_validators = DEFAULT_VALIDATORS
         if isinstance(self.cache_ttl, datetime.timedelta):
-            self.cache_ttl = self.cache_ttl.total_seconds()
+            self.cache_ttl: float = self.cache_ttl.total_seconds()
         if self.cache_ttl is not None:
             self.cache_validators += (wrapped_partial(has_passed_cache_ttl, cache_ttl=self.cache_ttl),)
-        if self.fs_protocol == "file":
-            assert (
-                "auto_mkdir" in self.fs_storage_options
-            ), "Set auto_mkdir=True when using LocalFileSystem so directories can be created"
         if self.fs_protocol:
             self._fs = filesystem(protocol=self.fs_protocol, **(self.fs_storage_options or {}))
         if self.prefix is not None:
@@ -102,6 +98,7 @@ class Cache:
                 f"consider using `deche.util.wrapper_partial`"
             )
             assert hasattr(validator, "__name__"), err
+        self._parents = set()
 
     @property
     def fs(self):
@@ -156,21 +153,32 @@ class Cache:
         data = self.read(path=path)
         return deserializer(data)
 
+    def _write_ttl_append(self, path: str):
+        # move any existing files
+        key = pathlib.Path(path).name
+        for f in sorted(self.fs.glob(f"{path}*"), reverse=True):
+            if is_input_filename(f):
+                continue
+            if pathlib.Path(f).name == key:
+                num = 0
+                suffix = ""
+            else:
+                num = int(f.replace(f"{path}-", ""))
+                f = f[:-2]
+                suffix = f"-{num}"
+            self.fs.mv(f"{f}{suffix}", f"{f}-{num + 1}")
+
     def write(self, path: str, data: bytes):
         if self.cache_ttl and self.cache_expiry_mode == CacheExpiryMode.APPEND and not is_input_filename(path):
-            # move any existing files
-            key = pathlib.Path(path).name
-            for f in sorted(self.fs.glob(f"{path}*"), reverse=True):
-                if is_input_filename(f):
-                    continue
-                if pathlib.Path(f).name == key:
-                    num = 0
-                    suffix = ""
-                else:
-                    num = int(f.replace(f"{path}-", ""))
-                    f = f[:-2]
-                    suffix = f"-{num}"
-                self.fs.mv(f"{f}{suffix}", f"{f}-{num + 1}")
+            self._write_ttl_append(path=path)
+
+        # Ensure parent exists
+        parent = str(pathlib.Path(path).parent)
+        if parent not in self._parents:
+            if not self.fs.exists(parent):
+                self.fs.mkdir(parent)
+            self._parents.add(parent)
+
         with self.fs.open(path, mode="wb") as f:
             logger.debug(f"{self.fs_protocol}://{path}")
             return f.write(data)
@@ -243,13 +251,13 @@ class Cache:
 
         return inner
 
-    # def _remove_all(self, func, ext=None):
-    #     def inner():
-    #         list_inner = self._list(func=func, ext=ext)
-    #         for key in list_inner():
-    #             self._remove(func, ext=ext)(key=key)
-    #
-    #     return inner
+    def _remove_all(self, func, ext=None):
+        def inner():
+            list_inner = self._list(func=func, ext=ext)
+            for key in list_inner():
+                self._remove(func, ext=ext)(key=key)
+
+        return inner
 
     def __call__(self, func):
         @functools.wraps(func)
@@ -293,7 +301,7 @@ class Cache:
         wrapper.remove_cached_inputs = self._remove(func=wrapper, ext=Extensions.inputs)
         wrapper.remove_cached_data = self._remove(func=wrapper)
         wrapper.remove_cached_exception = self._remove(func=wrapper, ext=Extensions.exception)
-        # wrapper.remove_all_cached_exceptions = self._remove_all(func=wrapper, ext=Extensions.exception)
+        wrapper.remove_all_cached_exceptions = self._remove_all(func=wrapper, ext=Extensions.exception)
         wrapper.path = functools.partial(self._path, func=func)
         wrapper.deche = self
         return wrapper
