@@ -1,6 +1,7 @@
 import datetime
 import functools
 import hashlib
+import inspect
 import logging
 import pathlib
 import pickle
@@ -259,28 +260,57 @@ class Cache:
 
         return inner
 
-    def __call__(self, func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            path = self._path(func=func)
-            inputs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs, ignore=self.non_hashable_kwargs)
-            key, _ = tokenize(obj=inputs)
-            if self.valid(path=f"{path}/{key}"):
-                return self._load(func=func)(key=key)
-            elif self._exists(func=func, ext=Extensions.exception)(key=key):
-                raise self._load(func=func, ext=Extensions.exception)(key=key)
-            try:
-                self.write_input(path=f"{path}/{key}", inputs=inputs)
-                logger.debug(f"Calling {func}")
-                output = func(*args, **kwargs)
-                logger.debug(f"Function {func} ran successfully")
-                self.write_output(path=f"{path}/{key}", output=output)
-            except Exception as e:
-                logger.debug(f"Function {func} raised {e}")
-                self.write_output(path=f"{path}/{key}{Extensions.exception}", output=e)
-                raise e
+    def __call__(self, func):  # noqa: C901
+        # TODO - very lazy async support. Refactor
+        # TODO - fsspec also has async support - could make exists/load calls async
 
-            return output
+        if inspect.iscoroutinefunction(func):
+
+            @functools.wraps(func)
+            async def wrapper(*args, **kwargs):
+                path = self._path(func=func)
+                inputs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs, ignore=self.non_hashable_kwargs)
+                key, _ = tokenize(obj=inputs)
+                if self.valid(path=f"{path}/{key}"):
+                    return self._load(func=func)(key=key)
+                elif self._exists(func=func, ext=Extensions.exception)(key=key):
+                    raise self._load(func=func, ext=Extensions.exception)(key=key)
+                try:
+                    self.write_input(path=f"{path}/{key}", inputs=inputs)
+                    logger.debug(f"Calling {func}")
+                    output = await func(*args, **kwargs)
+                    logger.debug(f"Function {func} ran successfully")
+                    self.write_output(path=f"{path}/{key}", output=output)
+                except Exception as e:
+                    logger.debug(f"Function {func} raised {e}")
+                    self.write_output(path=f"{path}/{key}{Extensions.exception}", output=e)
+                    raise e
+
+                return output
+
+        else:
+
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                path = self._path(func=func)
+                inputs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs, ignore=self.non_hashable_kwargs)
+                key, _ = tokenize(obj=inputs)
+                if self.valid(path=f"{path}/{key}"):
+                    return self._load(func=func)(key=key)
+                elif self._exists(func=func, ext=Extensions.exception)(key=key):
+                    raise self._load(func=func, ext=Extensions.exception)(key=key)
+                try:
+                    self.write_input(path=f"{path}/{key}", inputs=inputs)
+                    logger.debug(f"Calling {func}")
+                    output = func(*args, **kwargs)
+                    logger.debug(f"Function {func} ran successfully")
+                    self.write_output(path=f"{path}/{key}", output=output)
+                except Exception as e:
+                    logger.debug(f"Function {func} raised {e}")
+                    self.write_output(path=f"{path}/{key}{Extensions.exception}", output=e)
+                    raise e
+
+                return output
 
         wrapper.tokenize = tokenize_func(func=func, ignore=self.non_hashable_kwargs)
         wrapper.func = func
