@@ -46,6 +46,11 @@ def identity(x):
     return x
 
 
+@memory_cache
+async def async_func(x, y=1):
+    return x + y
+
+
 mem_fs = memory_cache.fs
 tmp_fs = fs_cache.fs
 

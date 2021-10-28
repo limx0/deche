@@ -10,6 +10,7 @@ from s3fs import S3FileSystem
 
 from deche.core import Cache
 from deche.core import tokenize
+from deche.test_utils import async_func
 from deche.test_utils import exc_func
 from deche.test_utils import func
 from deche.test_utils import func_ttl_expiry
@@ -327,13 +328,10 @@ def test_list_data_ignores_exception_file(c: Cache):
     assert result == []
 
 
-# def test_async(c: Cache):
-#     @c
-#     async def test(a,b):
-#         return a + b
-#
-#     asyncio.run(test(1,2))
-#
-#     result = test.list_cached_data()
-#     expected = ['fc326182c3511a7bf7b77142f4eb1526c89f3419417923f0fd70c6c229d6d62c']
-#     assert result == expected
+@pytest.mark.asyncio
+async def test_async(c: Cache):
+    result1 = await async_func(1, 2)
+    assert result1 == 3
+    result2 = async_func.list_cached_data()
+    expected = ["3120c18b7f68050a3f222bce0bd60a84053e85b925ff9f1903d3ace60e53bad2"]
+    assert result2 == expected
