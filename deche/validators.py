@@ -9,7 +9,7 @@ def exists(fs: AbstractFileSystem, path) -> bool:
 
 
 def has_passed_cache_ttl(fs: AbstractFileSystem, path: str, cache_ttl: Union[datetime.datetime, int]) -> bool:
-    modified = fs.modified(path=path)
+    modified = datetime.datetime.utcfromtimestamp(fs.stat(path=path)["mtime"])
     # Cache until
     if isinstance(cache_ttl, datetime.datetime):
         return datetime.datetime.now() > cache_ttl
