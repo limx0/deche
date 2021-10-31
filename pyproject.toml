@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "deche"
-version = "0.3.0"
+version = "0.3.1"
 description = ""
 authors = ["Bradley McElroy <bradley.mcelroy@live.com>"]
 
