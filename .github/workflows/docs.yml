@@ -48,8 +48,8 @@ jobs:
     - name: Export requirements.txt for binder
       run: poetry export -f requirements.txt --output requirements.txt
 
-    - name: Istall kernel
-      run: poetry run ipykernel install --user --name deche
+    - name: Install kernel
+      run: poetry run python -m ipykernel install --user --name deche
 
     - name: Build the book
       run: |
