@@ -1,13 +1,17 @@
+import datetime
 import os
 import time
 from collections.abc import Iterable
 from unittest import mock
 
+import numpy as np
+import pandas as pd
 import pytest
 from frozendict import frozendict
 from fsspec.implementations.memory import MemoryFileSystem
 from s3fs import S3FileSystem
 
+from deche import CacheExpiryMode
 from deche.core import Cache
 from deche.core import tokenize
 from deche.test_utils import Class
@@ -249,6 +253,20 @@ def test_append_iter_files(cached_ttl_data):
     assert keys == ["fc326182c3511a7bf7b77142f4eb1526c89f3419417923f0fd70c6c229d6d62c"]
 
 
+def test_cache_append_path(c: Cache):
+    @c.replace(cache_ttl=datetime.timedelta(seconds=1), cache_expiry_mode=CacheExpiryMode.APPEND)
+    def append_func(a=1):
+        return a
+
+    append_func()
+    print(append_func.list_cached_data())
+
+    time.sleep(1.1)
+
+    append_func()
+    print(append_func.list_cached_data(key_only=False))
+
+
 def test_cache_path(c: Cache):
     func(1, 2)
     assert func.path() == "/deche.test_utils.func"
@@ -359,3 +377,25 @@ def test_class_attributes_correct_token(c: Cache):
     cls1.func_a()
     assert cls1.func_a.is_valid(cls1)
     assert cls2.func_a.is_valid(cls2)
+
+
+def test_custom_serializer(c: Cache):
+    from io import BytesIO
+
+    def serialize(df: pd.DataFrame) -> bytes:
+        buff = BytesIO()
+        df.to_parquet(buff)
+        return buff.getvalue()
+
+    def deserialize(raw: bytes) -> pd.DataFrame:
+        return pd.read_parquet(BytesIO(raw))
+
+    @c.replace(output_serializer=serialize, output_deserializer=deserialize)
+    def make_dataframe():
+        return pd.DataFrame({"a": np.random.randn(10), "b": np.random.randn(10)})
+
+    df = make_dataframe()
+    assert df.shape == (10, 2)
+    assert make_dataframe.is_valid()
+    df = make_dataframe()
+    assert df.shape == (10, 2)

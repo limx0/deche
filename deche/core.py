@@ -330,7 +330,7 @@ class Cache:
 
                 return output
 
-        wrapper.tokenize = tokenize_func(func=func, ignore=self.non_hashable_kwargs, cls_attrs=self.class_attributes)
+        wrapper.tokenize = tokenize_func(func=func, ignore=self.non_hashable_kwargs, cls_attrs=self.cls_attrs)
         wrapper.func = func
         wrapper.fs = self.fs
         wrapper.is_valid = self.is_valid(func=wrapper)
@@ -357,3 +357,6 @@ class Cache:
     def replace(self, **kwargs):
         attrs = {k: getattr(self, k) for k in self.__dataclass_fields__}
         return self.__class__(**{**attrs, **kwargs})
+
+
+__all__ = ["Cache", "CacheExpiryMode", "tokenize", "DEFAULT_VALIDATORS", "DEFAULT_SERIALIZER", "DEFAULT_DESERIALIZER"]
