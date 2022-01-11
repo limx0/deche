@@ -22,7 +22,7 @@ divide_by(0)
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mZeroDivisionError[0m                         Traceback (most recent call last)
-[0;32m/tmp/ipykernel_1717/2118990485.py[0m in [0;36m<module>[0;34m[0m
+[0;32m/tmp/ipykernel_1702/2118990485.py[0m in [0;36m<module>[0;34m[0m
 [0;32m----> 1[0;31m [0mdivide_by[0m[0;34m([0m[0;36m0[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
 [0m
 [0;32m~/work/deche/deche/deche/core.py[0m in [0;36mwrapper[0;34m(*args, **kwargs)[0m
@@ -39,7 +39,7 @@ divide_by(0)
 [0m[1;32m    324[0m                     [0mlogger[0m[0;34m.[0m[0mdebug[0m[0;34m([0m[0;34mf"Function {func} ran successfully"[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
 [1;32m    325[0m                     [0mself[0m[0;34m.[0m[0mwrite_output[0m[0;34m([0m[0mpath[0m[0;34m=[0m[0;34mf"{path}/{key}"[0m[0;34m,[0m [0moutput[0m[0;34m=[0m[0moutput[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
 
-[0;32m/tmp/ipykernel_1717/121188569.py[0m in [0;36mdivide_by[0;34m(n)[0m
+[0;32m/tmp/ipykernel_1702/121188569.py[0m in [0;36mdivide_by[0;34m(n)[0m
 [1;32m      5[0m [0;34m@[0m[0mcache[0m[0;34m[0m[0;34m[0m[0m
 [1;32m      6[0m [0;32mdef[0m [0mdivide_by[0m[0;34m([0m[0mn[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
 [0;32m----> 7[0;31m     [0;32mreturn[0m [0;36m1[0m[0;34m/[0m[0mn[0m[0;34m[0m[0;34m[0m[0m
