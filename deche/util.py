@@ -4,6 +4,7 @@ import pathlib
 import re
 from functools import partial
 from functools import update_wrapper
+from typing import Dict
 
 
 def is_input_filename(key):
@@ -72,3 +73,13 @@ def wrapped_partial(func, *args, **kwargs):
     partial_func = partial(func, *args, **kwargs)
     update_wrapper(partial_func, func)
     return partial_func
+
+
+def is_class_instance(kwargs: Dict) -> bool:
+    if "self" in kwargs:
+        try:
+            kwargs["self"].__class__
+            return True
+        except AttributeError:
+            pass
+    return False

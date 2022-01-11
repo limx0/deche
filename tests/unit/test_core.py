@@ -10,6 +10,7 @@ from s3fs import S3FileSystem
 
 from deche.core import Cache
 from deche.core import tokenize
+from deche.test_utils import Class
 from deche.test_utils import async_func
 from deche.test_utils import exc_func
 from deche.test_utils import func
@@ -335,3 +336,26 @@ async def test_async(c: Cache):
     result2 = async_func.list_cached_data()
     expected = ["3120c18b7f68050a3f222bce0bd60a84053e85b925ff9f1903d3ace60e53bad2"]
     assert result2 == expected
+
+
+def test_class_attributes_cache_data(c: Cache):
+    # Arrange
+    cls = Class(a=1, b=2)
+
+    cached = cls.func_a.list_cached_data()
+    assert not cached
+
+    cls.func_a()
+    cached = cls.func_a.list_cached_data()
+    assert cached == ["eb15d4f9ea9af826de550a47179c491f84b8f6028c3de97ca43df6de79287d2a"]
+
+
+def test_class_attributes_correct_token(c: Cache):
+    # Arrange
+    cls1 = Class(a=1, b=2)
+    cls2 = Class(a=1, b=3)
+    assert not cls1.func_a.is_valid(cls1)
+
+    cls1.func_a()
+    assert cls1.func_a.is_valid(cls1)
+    assert cls2.func_a.is_valid(cls2)

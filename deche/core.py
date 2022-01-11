@@ -8,9 +8,10 @@ import pickle
 from dataclasses import dataclass
 from enum import Enum
 from functools import partial
-from typing import Callable, Optional, Tuple, Union
+from typing import Callable, Dict, Optional, Tuple, Union
 
 import cloudpickle
+from frozendict import frozendict
 from fsspec import filesystem
 
 from deche import config
@@ -18,6 +19,7 @@ from deche.enums import CacheVersion
 from deche.inspection import args_kwargs_to_kwargs
 from deche.util import ensure_path
 from deche.util import identity
+from deche.util import is_class_instance
 from deche.util import is_input_filename
 from deche.util import not_cache_append_file
 from deche.util import wrapped_partial
@@ -37,13 +39,22 @@ def tokenize(obj: object, serializer: Callable = DEFAULT_SERIALIZER) -> Tuple[st
     return key, value
 
 
-def tokenize_func(func, ignore=None):
+def tokenize_func(func, ignore=None, cls_attrs=None):
     def inner(*args, **kwargs):
-        full_kwargs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs, ignore=ignore)
-        key, value = tokenize(obj=full_kwargs)
+        full_kwargs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs)
+        key, value = tokenize(obj=prepare_full_kwargs(all_kwargs=full_kwargs, ignore=ignore, cls_attrs=cls_attrs))
         return key
 
     return inner
+
+
+def prepare_full_kwargs(all_kwargs: Dict, ignore=None, cls_attrs=None):
+    all_kwargs = {k: v for k, v in all_kwargs.items() if k not in (ignore or ())}
+    if is_class_instance(all_kwargs):
+        # Remove self, add any cls_attrs
+        self = all_kwargs.pop("self")
+        all_kwargs.update({k: getattr(self, k) for k in (cls_attrs or {})})
+    return frozendict(all_kwargs)
 
 
 DEFAULT_VALIDATORS = (exists,)
@@ -80,6 +91,7 @@ class Cache:
     cache_expiry_mode: CacheExpiryMode = CacheExpiryMode.REMOVE
     cache_validators: Tuple[Callable] = None
     non_hashable_kwargs: Optional[Tuple[str]] = None
+    cls_attrs: Optional[Tuple[str]] = None
 
     def __post_init__(self):
         self._fs = None
@@ -269,7 +281,10 @@ class Cache:
             @functools.wraps(func)
             async def wrapper(*args, **kwargs):
                 path = self._path(func=func)
-                inputs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs, ignore=self.non_hashable_kwargs)
+                all_kwargs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs)
+                inputs = prepare_full_kwargs(
+                    all_kwargs=all_kwargs, ignore=self.non_hashable_kwargs, cls_attrs=self.cls_attrs
+                )
                 key, _ = tokenize(obj=inputs)
                 if self.valid(path=f"{path}/{key}"):
                     return self._load(func=func)(key=key)
@@ -293,7 +308,10 @@ class Cache:
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 path = self._path(func=func)
-                inputs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs, ignore=self.non_hashable_kwargs)
+                all_kwargs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs)
+                inputs = prepare_full_kwargs(
+                    all_kwargs=all_kwargs, ignore=self.non_hashable_kwargs, cls_attrs=self.cls_attrs
+                )
                 key, _ = tokenize(obj=inputs)
                 if self.valid(path=f"{path}/{key}"):
                     return self._load(func=func)(key=key)
@@ -312,7 +330,7 @@ class Cache:
 
                 return output
 
-        wrapper.tokenize = tokenize_func(func=func, ignore=self.non_hashable_kwargs)
+        wrapper.tokenize = tokenize_func(func=func, ignore=self.non_hashable_kwargs, cls_attrs=self.class_attributes)
         wrapper.func = func
         wrapper.fs = self.fs
         wrapper.is_valid = self.is_valid(func=wrapper)
