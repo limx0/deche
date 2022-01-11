@@ -14,7 +14,11 @@ class Class:
         self.b = b
 
     @memory_cache
-    def c(self):
+    def func(self):
+        return self.a + self.b
+
+    @memory_cache.replace(cls_attrs=("a",))
+    def func_a(self):
         return self.a + self.b
 
 
