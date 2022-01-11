@@ -1,7 +1,9 @@
-__version__ = "0.0.22"
+from importlib.metadata import version
 
 from donfig import Config
 
+
+__version__ = version(__name__)
 
 config = Config("deche")
 

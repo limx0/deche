@@ -1,6 +1,6 @@
 # deche
 
-A small caching decorator
+A small caching decorator, Python 3.8+
 
 ### Install
 
