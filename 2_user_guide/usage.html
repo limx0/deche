@@ -203,24 +203,300 @@
         <!-- Table of contents -->
         <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Usage
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#cache-instances">
+     Cache instances
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-deche">
+     Using deche
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#whats-happening-under-the-hood">
+     Whats happening under the hood?
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#features">
+   Features
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#return-values-including-exceptions-are-cached">
+     Return values (including exceptions) are cached
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#view-cached-kwargs-data-exceptions-via-list-cached">
+     View cached kwargs/data/exceptions via
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       .list_cached_*
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#retrieve-values-from-the-cache-via-key-or-kwargs">
+     Retrieve values from the cache via
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       key=
+      </span>
+     </code>
+     or
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       kwargs=
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#easily-create-multiple-instances-of-cache-via-replace">
+     Easily create multiple instances of
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Cache
+      </span>
+     </code>
+     via
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       replace
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#cache-entries-can-be-valid-for-certain-period-of-time-via-cache-ttl">
+     Cache entries can be valid for certain period of time via
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       cache_ttl
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#cache-entries-can-overwrite-or-append-via-cache-expiry-mode">
+     Cache entries can overwrite or append via
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       cache_expiry_mode
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#persist-kwargs-and-return-values-in-any-format-via-input-serializer-input-deserializer-output-serializer-output-deserializer">
+     Persist kwargs and return values in any format via
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       input_serializer/input_deserializer
+      </span>
+     </code>
+     ,
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       output_serializer/output_deserializer
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#ignore-certain-kwargs-via-non-hashable-kwargs">
+     Ignore certain kwargs via
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       non_hashable_kwargs
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#cache-class-methods-alongside-attributes">
+     Cache class methods alongside attributes
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+            </nav>
         </div>
     </div>
 </div>
-    <!-- Table of contents that is only displayed when printing the page -->
-    <div id="jb-print-docs-body" class="onlyprint">
-        <h1>Usage</h1>
-        <!-- Table of contents -->
-        <div id="print-main-content" class="row">
-            <div class="col-12 col-md-12 pl-md-5 pr-md-5">
-            <div id="jb-print-toc">
-                
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Usage</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Usage
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#cache-instances">
+     Cache instances
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-deche">
+     Using deche
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#whats-happening-under-the-hood">
+     Whats happening under the hood?
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#features">
+   Features
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#return-values-including-exceptions-are-cached">
+     Return values (including exceptions) are cached
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#view-cached-kwargs-data-exceptions-via-list-cached">
+     View cached kwargs/data/exceptions via
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       .list_cached_*
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#retrieve-values-from-the-cache-via-key-or-kwargs">
+     Retrieve values from the cache via
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       key=
+      </span>
+     </code>
+     or
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       kwargs=
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#easily-create-multiple-instances-of-cache-via-replace">
+     Easily create multiple instances of
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Cache
+      </span>
+     </code>
+     via
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       replace
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#cache-entries-can-be-valid-for-certain-period-of-time-via-cache-ttl">
+     Cache entries can be valid for certain period of time via
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       cache_ttl
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#cache-entries-can-overwrite-or-append-via-cache-expiry-mode">
+     Cache entries can overwrite or append via
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       cache_expiry_mode
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#persist-kwargs-and-return-values-in-any-format-via-input-serializer-input-deserializer-output-serializer-output-deserializer">
+     Persist kwargs and return values in any format via
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       input_serializer/input_deserializer
+      </span>
+     </code>
+     ,
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       output_serializer/output_deserializer
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#ignore-certain-kwargs-via-non-hashable-kwargs">
+     Ignore certain kwargs via
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       non_hashable_kwargs
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#cache-class-methods-alongside-attributes">
+     Cache class methods alongside attributes
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
             </div>
             
               <div>
                 
   <div class="tex2jax_ignore mathjax_ignore section" id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
-<p>First, we instantiate our cache</p>
+<div class="section" id="cache-instances">
+<h2>Cache instances<a class="headerlink" href="#cache-instances" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">deche</span></code> is built on top of the excellent <a class="reference external" href="https://github.com/fsspec/filesystem_spec">fsspec</a> library, which means it can be used with any backends supported by <code class="docutils literal notranslate"><span class="pre">fsspec</span></code>, such as <code class="docutils literal notranslate"><span class="pre">memory</span></code>, <code class="docutils literal notranslate"><span class="pre">local</span></code>, <code class="docutils literal notranslate"><span class="pre">s3</span></code> among many others.</p>
+<p>Simply pass</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">deche</span> <span class="kn">import</span> <span class="n">Cache</span>
@@ -230,7 +506,10 @@
 </div>
 </div>
 </div>
-<p>Next, create some simple functions, simulating some work</p>
+</div>
+<div class="section" id="using-deche">
+<h2>Using deche<a class="headerlink" href="#using-deche" title="Permalink to this headline">¶</a></h2>
+<p>Let’s create some simple functions simulating some work, and wrap them in our <code class="docutils literal notranslate"><span class="pre">cache</span></code> decorator</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
@@ -251,11 +530,15 @@
 <p>Try it out!</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inc</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">time</span> inc(1)
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1.84 ms, sys: 229 µs, total: 2.07 ms
+Wall time: 1 s
+</pre></div>
+</div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2
 </pre></div>
 </div>
@@ -263,11 +546,15 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inc</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">time</span> inc(1)
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 194 µs, sys: 24 µs, total: 218 µs
+Wall time: 223 µs
+</pre></div>
+</div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2
 </pre></div>
 </div>
@@ -286,101 +573,478 @@
 </div>
 </div>
 </div>
+<div class="section" id="whats-happening-under-the-hood">
+<h2>Whats happening under the hood?<a class="headerlink" href="#whats-happening-under-the-hood" title="Permalink to this headline">¶</a></h2>
+<p>deche computes a hash <code class="docutils literal notranslate"><span class="pre">key</span></code> from the fully qualified kwargs to your function, and when the function is called, it saves the <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>, the <code class="docutils literal notranslate"><span class="pre">return</span> <span class="pre">value</span></code> (actual object or exception!) to a location specified by the Cache instance.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@cache</span>
+<span class="k">def</span> <span class="nf">my_func</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
 
-    <script type="text/x-thebe-config">
-    {
-        requestKernel: true,
-        binderOptions: {
-            repo: "limx0/deche",
-            ref: "main",
-        },
-        codeMirrorConfig: {
-            theme: "abcdef",
-            mode: "python"
-        },
-        kernelOptions: {
-            kernelName: "python3",
-            path: "./2_user_guide"
-        },
-        predefinedOutput: true
-    }
-    </script>
-    <script>kernelName = 'python3'</script>
+<span class="nb">print</span><span class="p">(</span><span class="n">my_func</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">my_func</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">my_func</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2a8dafae61fc6a537258ca1909b5db314e584b8596cca0c3a9d0c0624e81caa6
+2a8dafae61fc6a537258ca1909b5db314e584b8596cca0c3a9d0c0624e81caa6
+2a8dafae61fc6a537258ca1909b5db314e584b8596cca0c3a9d0c0624e81caa6
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="tex2jax_ignore mathjax_ignore section" id="features">
+<h1>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="return-values-including-exceptions-are-cached">
+<h2>Return values (including exceptions) are cached<a class="headerlink" href="#return-values-including-exceptions-are-cached" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@cache</span>
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">n</span>
 
-              </div>
-              
-            </div>
-        </div>
-    </div>
-    <div id="main-content" class="row noprint">
-        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
-              <div>
-                
-  <div class="tex2jax_ignore mathjax_ignore section" id="usage">
-<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
-<p>First, we instantiate our cache</p>
+<span class="nd">@cache</span>
+<span class="k">def</span> <span class="nf">divide_by</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="n">n</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">func</span><span class="o">.</span><span class="n">has_data</span><span class="p">(</span><span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>False
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">func</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>5
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">func</span><span class="o">.</span><span class="n">has_data</span><span class="p">(</span><span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">divide_by</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.0
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">divide_by</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ZeroDivisionError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_1809</span><span class="o">/</span><span class="mf">2118990485.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">divide_by</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="nn">~/work/deche/deche/deche/core.py</span> in <span class="ni">wrapper</span><span class="nt">(*args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">327</span>                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Function </span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2"> raised </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">328</span>                     <span class="bp">self</span><span class="o">.</span><span class="n">write_output</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">key</span><span class="si">}{</span><span class="n">Extensions</span><span class="o">.</span><span class="n">exception</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">329</span>                     <span class="k">raise</span> <span class="n">e</span>
+<span class="g g-Whitespace">    </span><span class="mi">330</span> 
+<span class="g g-Whitespace">    </span><span class="mi">331</span>                 <span class="k">return</span> <span class="n">output</span>
+
+<span class="nn">~/work/deche/deche/deche/core.py</span> in <span class="ni">wrapper</span><span class="nt">(*args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">321</span>                     <span class="bp">self</span><span class="o">.</span><span class="n">write_input</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">322</span>                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calling </span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">323</span>                     <span class="n">output</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">324</span>                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Function </span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2"> ran successfully&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">325</span>                     <span class="bp">self</span><span class="o">.</span><span class="n">write_output</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+
+<span class="nn">/tmp/ipykernel_1809/121188569.py</span> in <span class="ni">divide_by</span><span class="nt">(n)</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="nd">@cache</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="k">def</span> <span class="nf">divide_by</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+<span class="ne">----&gt; </span><span class="mi">7</span>     <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="n">n</span>
+
+<span class="ne">ZeroDivisionError</span>: division by zero
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">divide_by</span><span class="o">.</span><span class="n">has_exception</span><span class="p">(</span><span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<p>When a method has thrown an exception - it will not be called again, instead, just like for cached data, it will load the exception from the cache (notice the load rather than the functio being called)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">divide_by</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ZeroDivisionError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_1020930</span><span class="o">/</span><span class="mf">2118990485.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">divide_by</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="nn">~/projects/deche/deche/core.py</span> in <span class="ni">wrapper</span><span class="nt">(*args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">317</span>                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">)(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">318</span>                 <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exists</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="n">Extensions</span><span class="o">.</span><span class="n">exception</span><span class="p">)(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">319</span>                     <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="n">Extensions</span><span class="o">.</span><span class="n">exception</span><span class="p">)(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">320</span>                 <span class="k">try</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">321</span>                     <span class="bp">self</span><span class="o">.</span><span class="n">write_input</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">)</span>
+
+<span class="ne">ZeroDivisionError</span>: division by zero
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="view-cached-kwargs-data-exceptions-via-list-cached">
+<h2>View cached kwargs/data/exceptions via <code class="docutils literal notranslate"><span class="pre">.list_cached_*</span></code><a class="headerlink" href="#view-cached-kwargs-data-exceptions-via-list-cached" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">func</span><span class="o">.</span><span class="n">list_cached_data</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;034b4d98f849295d44a5231fb156299fbdb5d8131186c9766ec2d125ec34eecb&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">divide_by</span><span class="o">.</span><span class="n">list_cached_exceptions</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;4a19b9cb964e5c15171025cb0a657a269d5e20087c41fc7b967c3928d602e14a&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="retrieve-values-from-the-cache-via-key-or-kwargs">
+<h2>Retrieve values from the cache via <code class="docutils literal notranslate"><span class="pre">key=</span></code> or <code class="docutils literal notranslate"><span class="pre">kwargs=</span></code><a class="headerlink" href="#retrieve-values-from-the-cache-via-key-or-kwargs" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">divide_by</span><span class="o">.</span><span class="n">load_cached_inputs</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;4a19b9cb964e5c15171025cb0a657a269d5e20087c41fc7b967c3928d602e14a&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frozendict.frozendict({&#39;n&#39;: 0})
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">divide_by</span><span class="o">.</span><span class="n">load_cached_exception</span><span class="p">(</span><span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ZeroDivisionError(&#39;division by zero&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="easily-create-multiple-instances-of-cache-via-replace">
+<h2>Easily create multiple instances of <code class="docutils literal notranslate"><span class="pre">Cache</span></code> via <code class="docutils literal notranslate"><span class="pre">replace</span></code><a class="headerlink" href="#easily-create-multiple-instances-of-cache-via-replace" title="Permalink to this headline">¶</a></h2>
+<p>Having different config for different functions is simple, just create a new instance via <code class="docutils literal notranslate"><span class="pre">replace</span></code>. Typically usage is to create one “base” cache instance and use <code class="docutils literal notranslate"><span class="pre">replace</span></code> for actual functions:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">deche</span> <span class="kn">import</span> <span class="n">Cache</span>
 
 <span class="n">cache</span> <span class="o">=</span> <span class="n">Cache</span><span class="p">(</span><span class="n">fs_protocol</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<p>Next, create some simple functions, simulating some work</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
 
-<span class="nd">@cache</span>
-<span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">x</span>
+<span class="nd">@cache</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">non_hashable_kwargs</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,))</span>
+<span class="k">def</span> <span class="nf">myfunc</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="cache-entries-can-be-valid-for-certain-period-of-time-via-cache-ttl">
+<h2>Cache entries can be valid for certain period of time via <code class="docutils literal notranslate"><span class="pre">cache_ttl</span></code><a class="headerlink" href="#cache-entries-can-be-valid-for-certain-period-of-time-via-cache-ttl" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span>
 
-<span class="nd">@cache</span>
-<span class="k">def</span> <span class="nf">inc</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
-    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span>
-</pre></div>
-</div>
-</div>
-</div>
-<p>Try it out!</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inc</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2
+
+<span class="nd">@cache</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">cache_ttl</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">myfunc</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inc</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">myfunc</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">myfunc</span><span class="o">.</span><span class="n">list_cached_data</span><span class="p">())</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;eb15d4f9ea9af826de550a47179c491f84b8f6028c3de97ca43df6de79287d2a&#39;]
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inc</span><span class="o">.</span><span class="n">list_cached_data</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">myfunc</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">myfunc</span><span class="o">.</span><span class="n">list_cached_data</span><span class="p">())</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;645076b4c840c53438b6eec928fee62ea2e2f700b62bcf2efb030766341c5113&#39;]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;eb15d4f9ea9af826de550a47179c491f84b8f6028c3de97ca43df6de79287d2a&#39;]
 </pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="cache-entries-can-overwrite-or-append-via-cache-expiry-mode">
+<h2>Cache entries can overwrite or append via <code class="docutils literal notranslate"><span class="pre">cache_expiry_mode</span></code><a class="headerlink" href="#cache-entries-can-overwrite-or-append-via-cache-expiry-mode" title="Permalink to this headline">¶</a></h2>
+<p><em>NB: reading of appended data not gracefully supported yet</em></p>
+<p>On occassion, you may want to cache something for some period using <code class="docutils literal notranslate"><span class="pre">cache_ttl</span></code>,  but continue caching versions of that data periodically - for example saving a webpage once weekly.</p>
+<p>For this purpose you can use <code class="docutils literal notranslate"><span class="pre">cache_expiry_mode=CacheExpiryMode.APPEND</span></code> which will simply create new keys with an increment each time the function is rerun after the ttl period.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">deche</span> <span class="kn">import</span> <span class="n">CacheExpiryMode</span>
+
+<span class="nd">@cache</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">cache_ttl</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">cache_expiry_mode</span><span class="o">=</span><span class="n">CacheExpiryMode</span><span class="o">.</span><span class="n">APPEND</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">append_func</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">append_func</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">append_func</span><span class="o">.</span><span class="n">list_cached_data</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;eb15d4f9ea9af826de550a47179c491f84b8f6028c3de97ca43df6de79287d2a&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">append_func</span><span class="p">()</span>
+<span class="n">cache</span><span class="o">.</span><span class="n">fs</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;**append_func**/*&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;/__main__.append_func/eb15d4f9ea9af826de550a47179c491f84b8f6028c3de97ca43df6de79287d2a&#39;,
+ &#39;/__main__.append_func/eb15d4f9ea9af826de550a47179c491f84b8f6028c3de97ca43df6de79287d2a-1&#39;,
+ &#39;/__main__.append_func/eb15d4f9ea9af826de550a47179c491f84b8f6028c3de97ca43df6de79287d2a.inputs&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="persist-kwargs-and-return-values-in-any-format-via-input-serializer-input-deserializer-output-serializer-output-deserializer">
+<h2>Persist kwargs and return values in any format via <code class="docutils literal notranslate"><span class="pre">input_serializer/input_deserializer</span></code>, <code class="docutils literal notranslate"><span class="pre">output_serializer/output_deserializer</span></code><a class="headerlink" href="#persist-kwargs-and-return-values-in-any-format-via-input-serializer-input-deserializer-output-serializer-output-deserializer" title="Permalink to this headline">¶</a></h2>
+<p>The default serializer for deche is <code class="docutils literal notranslate"><span class="pre">pickle</span></code> which works well in some cases with stable environments, but eventually it will make more sense to persist data via a better format, such a JSON for simple object or parquet for pandas DataFrames.</p>
+<p>This can be accomplied via the <code class="docutils literal notranslate"><span class="pre">input_serializer/input_deserializer</span></code>, <code class="docutils literal notranslate"><span class="pre">output_serializer/output_deserializer</span></code> kwargs.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="n">buff</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="n">buff</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">buff</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="n">raw</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">raw</span><span class="p">))</span>
+
+
+<span class="nd">@cache</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">output_serializer</span><span class="o">=</span><span class="n">serialize</span><span class="p">,</span> <span class="n">output_deserializer</span><span class="o">=</span><span class="n">deserialize</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">make_dataframe</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">)})</span>
+
+</pre></div>
+</div>
+</div>
+<div class="section" id="ignore-certain-kwargs-via-non-hashable-kwargs">
+<h2>Ignore certain kwargs via <code class="docutils literal notranslate"><span class="pre">non_hashable_kwargs</span></code><a class="headerlink" href="#ignore-certain-kwargs-via-non-hashable-kwargs" title="Permalink to this headline">¶</a></h2>
+<p>If some of your arguments are non-hashable objects or arguments that do not determine the return value of the function, they can be ignore in the computing of the hash via <code class="docutils literal notranslate"><span class="pre">non_hashable_kwargs</span></code>.</p>
+<p>Be careful not to do this if they <em>do determine</em> the result, as collisions will occur (a collison is where two different results share the same key/token and overwrite each other)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@cache</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">non_hashable_kwargs</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,))</span>
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running func with </span><span class="si">{</span><span class="n">b</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+
+<span class="n">func</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running func with b=2
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>3
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># `a` is ignored, changing it will not rerun the function while `b` is the same (and therefore cached)</span>
+<span class="n">func</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>3
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Changing `b` will however trigger a recomputation </span>
+<span class="n">func</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running func with b=5
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>6
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="cache-class-methods-alongside-attributes">
+<h2>Cache class methods alongside attributes<a class="headerlink" href="#cache-class-methods-alongside-attributes" title="Permalink to this headline">¶</a></h2>
+<p><em>This is experimental and not well tested - please raise any issues on <a class="reference external" href="https://github.com/limx0/deche">github</a></em></p>
+<p>Class methods can also be cached. They ignore the class instance <code class="docutils literal notranslate"><span class="pre">self</span></code> by default as the hash of this object changes, but can be used with other attributes:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyClass</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">a</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">b</span>
+
+    <span class="nd">@cache</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">cls_attrs</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,))</span>
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running func with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>
+    
+
+<span class="n">cls1</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">cls1</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running func with self.a=1
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>3
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># New class instance, but same token</span>
+<span class="n">cls2</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">cls2</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>3
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># New class instance, `a` has changed so method is rerun </span>
+<span class="n">cls3</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">cls3</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running func with self.a=2
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>7
+</pre></div>
+</div>
 </div>
 </div>
 </div>
@@ -395,21 +1059,21 @@
         },
         codeMirrorConfig: {
             theme: "abcdef",
-            mode: "python"
+            mode: "deche"
         },
         kernelOptions: {
-            kernelName: "python3",
+            kernelName: "deche",
             path: "./2_user_guide"
         },
         predefinedOutput: true
     }
     </script>
-    <script>kernelName = 'python3'</script>
+    <script>kernelName = 'deche'</script>
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
+            
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
     <a class='left-prev' id="prev-link" href="../1_getting_started/getting_started.html" title="previous page">
         <i class="fas fa-angle-left"></i>
@@ -419,7 +1083,7 @@
         </div>
     </a>
 </div>
-        
+            
         </div>
     </div>
     <footer class="footer">
