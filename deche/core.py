@@ -136,8 +136,7 @@ class Cache:
             self.__post_init__()
 
     def _path(self, func):
-        if not self._fs:
-            self.fs
+        assert self.fs
         path = f"{func.__module__}.{func.__name__}"
         return f"{self.prefix}/{path}" if self.prefix is not None else path
 
