@@ -4,8 +4,8 @@ from typing import Union
 from fsspec import AbstractFileSystem
 
 
-def exists(fs: AbstractFileSystem, path) -> bool:
-    return fs.exists(path)
+def exists(fs: AbstractFileSystem, inputs_path, content_path) -> bool:
+    return fs.exists(content_path)
 
 
 def has_passed_cache_ttl(fs: AbstractFileSystem, path: str, cache_ttl: Union[datetime.datetime, int]) -> bool:

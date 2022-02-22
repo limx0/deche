@@ -13,6 +13,7 @@ from s3fs import S3FileSystem
 
 from deche import CacheExpiryMode
 from deche.core import Cache
+from deche.core import content_to_path
 from deche.core import tokenize
 from deche.test_utils import Class
 from deche.test_utils import async_func
@@ -104,12 +105,17 @@ def test_output_serialization(c: Cache, output):
 def test_read_input(c: Cache):
     func(1, 2, x=5)
     key = "ea68dd17a0216fe43359cbbc0bb814baf446fae361653b99c61a6d8026cc99a0"
-    assert func.load_cached_inputs(key=key) == frozendict({"a": 1, "b": 2, "x": 5})
+    result = func.load_cached_inputs(key=key)
+    expected = {
+        "inputs": frozendict({"a": 1, "b": 2, "x": 5}),
+        "output": "50a9726b3666d99aea8af006cf224a7637d0c0b5febb3b0051192ce1e8615f47",
+    }
+    assert result == expected
 
 
 def test_write(c, path, inputs, output):
-    key, _ = tokenize(obj=inputs)
-    c.write_input(path=f"{path}/{key}", inputs=inputs)
+    key, content = tokenize(obj=inputs)
+    c.write_input(path=f"{path}/{key}", inputs=inputs, content_hash=content)
     c.write_output(path=f"{path}/{key}", output=output, output_serializer=identity)
     assert c.valid(path=f"{path}/{key}")
 
@@ -117,7 +123,8 @@ def test_write(c, path, inputs, output):
 def test_func_wrapper(c):
     func(1, 2, x=5)
     key = "ea68dd17a0216fe43359cbbc0bb814baf446fae361653b99c61a6d8026cc99a0"
-    full_path = f"/{func.__module__}.{func.__name__}/{key}"
+    content_hash = content_to_path("50a9726b3666d99aea8af006cf224a7637d0c0b5febb3b0051192ce1e8615f47")
+    full_path = f"/{func.__module__}.{func.__name__}/{content_hash}"
     assert func.tokenize(1, 2, x=5) == key
     assert c.valid(path=full_path)
 

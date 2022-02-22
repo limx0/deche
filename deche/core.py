@@ -15,7 +15,6 @@ from frozendict import frozendict
 from fsspec import filesystem
 
 from deche import config
-from deche.enums import CacheVersion
 from deche.inspection import args_kwargs_to_kwargs
 from deche.util import ensure_path
 from deche.util import identity
@@ -55,6 +54,10 @@ def prepare_full_kwargs(all_kwargs: Dict, ignore=None, cls_attrs=None):
         self = all_kwargs.pop("self")
         all_kwargs.update({k: getattr(self, k) for k in (cls_attrs or {})})
     return frozendict(all_kwargs)
+
+
+def content_to_path(content_hash):
+    return f"{content_hash[:2]}/{content_hash[2:]}"
 
 
 DEFAULT_VALIDATORS = (exists,)
@@ -196,19 +199,25 @@ class Cache:
             logger.debug(f"{self.fs_protocol}://{path}")
             return f.write(data)
 
-    def write_input(self, path, inputs, input_serializer=None):
-        key, input_value = tokenize(obj=inputs, serializer=input_serializer or self.input_serializer)
+    def write_input(self, path, inputs, content_hash: str, input_serializer=None):
+        obj = {
+            "inputs": inputs,
+            "output": content_hash,
+        }
+        key, input_value = tokenize(obj=obj, serializer=input_serializer or self.input_serializer)
         self.write(path=f"{path}{Extensions.inputs}", data=input_value)
 
-    def write_output(self, path, output, output_serializer=None):
+    def write_output(self, path, output, ext: str = "", output_serializer=None) -> str:
         content_hash, output_value = tokenize(obj=output, serializer=output_serializer or self.output_serializer)
-        self.write(path=path, data=output_value)
+        self.write(path=f"{path}/{content_to_path(content_hash)}{ext}", data=output_value)
+        return content_hash
 
     def is_valid(self, func):
         def inner(*args, **kwargs):
             path = self._path(func)
             key = func.tokenize(*args, **kwargs)
-            return self.valid(path=f"{path}/{key}")
+            inputs = self._load(func=func, ext=Extensions.inputs)
+            return self.valid(inputs_path=f"{path}/{key}", content_path=f"{path}/")
 
         return inner
 
@@ -242,7 +251,7 @@ class Cache:
 
         return inner
 
-    def _load(self, func, deserializer=None, ext=None, version=CacheVersion.LATEST):
+    def _load(self, func, deserializer=None, ext=None):
         def inner(*, key=None, kwargs=None):
             assert key is not None or kwargs is not None, "Must pass key or kwargs"
             path = self._path(func)
@@ -291,14 +300,15 @@ class Cache:
                 elif self._exists(func=func, ext=Extensions.exception)(key=key):
                     raise self._load(func=func, ext=Extensions.exception)(key=key)
                 try:
-                    self.write_input(path=f"{path}/{key}", inputs=inputs)
                     logger.debug(f"Calling {func}")
                     output = await func(*args, **kwargs)
                     logger.debug(f"Function {func} ran successfully")
-                    self.write_output(path=f"{path}/{key}", output=output)
+                    content_hash = self.write_output(path=path, output=output)
+                    self.write_input(path=f"{path}/{key}", content_hash=content_hash, inputs=inputs)
                 except Exception as e:
                     logger.debug(f"Function {func} raised {e}")
-                    self.write_output(path=f"{path}/{key}{Extensions.exception}", output=e)
+                    content_hash = self.write_output(path=path, ext=Extensions.exception, output=e)
+                    self.write_input(path=f"{path}/{key}", content_hash=content_hash, inputs=inputs)
                     raise e
 
                 return output
@@ -313,19 +323,20 @@ class Cache:
                     all_kwargs=all_kwargs, ignore=self.non_hashable_kwargs, cls_attrs=self.cls_attrs
                 )
                 key, _ = tokenize(obj=inputs)
-                if self.valid(path=f"{path}/{key}"):
+                if self.valid(inputs_path=f"{path}/{key}"):
                     return self._load(func=func)(key=key)
                 elif self._exists(func=func, ext=Extensions.exception)(key=key):
                     raise self._load(func=func, ext=Extensions.exception)(key=key)
                 try:
-                    self.write_input(path=f"{path}/{key}", inputs=inputs)
                     logger.debug(f"Calling {func}")
                     output = func(*args, **kwargs)
                     logger.debug(f"Function {func} ran successfully")
-                    self.write_output(path=f"{path}/{key}", output=output)
+                    content_hash = self.write_output(path=path, ext="", output=output)
+                    self.write_input(path=f"{path}/{key}", content_hash=content_hash, inputs=inputs)
                 except Exception as e:
                     logger.debug(f"Function {func} raised {e}")
-                    self.write_output(path=f"{path}/{key}{Extensions.exception}", output=e)
+                    content_hash = self.write_output(path=path, ext=Extensions.exception, output=e)
+                    self.write_input(path=f"{path}/{key}", content_hash=content_hash, inputs=inputs)
                     raise e
 
                 return output
