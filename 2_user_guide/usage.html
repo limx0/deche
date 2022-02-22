@@ -507,6 +507,29 @@ const thebe_selector_output = ".output, .cell_output"
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Input</span> <span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">deche</span> <span class="kn">import</span> <span class="n">Cache</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">cache</span> <span class="o">=</span> <span class="n">Cache</span><span class="p">(</span><span class="n">fs_protocol</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">)</span>
+
+<span class="n">File</span> <span class="o">~/</span><span class="n">work</span><span class="o">/</span><span class="n">deche</span><span class="o">/</span><span class="n">deche</span><span class="o">/</span><span class="n">deche</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">__version__</span> <span class="o">=</span> <span class="n">version</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">8</span> <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="s2">&quot;deche&quot;</span><span class="p">)</span>
+<span class="ne">---&gt; </span><span class="mi">10</span> <span class="kn">from</span> <span class="nn">deche.core</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">File</span> <span class="o">~/</span><span class="n">work</span><span class="o">/</span><span class="n">deche</span><span class="o">/</span><span class="n">deche</span><span class="o">/</span><span class="n">deche</span><span class="o">/</span><span class="n">core</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">18</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">     </span><span class="mi">15</span> <span class="kn">from</span> <span class="nn">fsspec</span> <span class="kn">import</span> <span class="n">filesystem</span>
+<span class="g g-Whitespace">     </span><span class="mi">17</span> <span class="kn">from</span> <span class="nn">deche</span> <span class="kn">import</span> <span class="n">config</span>
+<span class="ne">---&gt; </span><span class="mi">18</span> <span class="kn">from</span> <span class="nn">deche.enums</span> <span class="kn">import</span> <span class="n">CacheVersion</span>
+<span class="g g-Whitespace">     </span><span class="mi">19</span> <span class="kn">from</span> <span class="nn">deche.inspection</span> <span class="kn">import</span> <span class="n">args_kwargs_to_kwargs</span>
+<span class="g g-Whitespace">     </span><span class="mi">20</span> <span class="kn">from</span> <span class="nn">deche.util</span> <span class="kn">import</span> <span class="n">ensure_path</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;deche.enums&#39;
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 <div class="section" id="using-deche">
@@ -537,7 +560,7 @@ const thebe_selector_output = ".output, .cell_output"
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2.15 ms, sys: 362 µs, total: 2.51 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1.98 ms, sys: 356 µs, total: 2.33 ms
 Wall time: 1 s
 </pre></div>
 </div>
@@ -553,8 +576,8 @@ Wall time: 1 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 186 µs, sys: 31 µs, total: 217 µs
-Wall time: 222 µs
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 90 µs, sys: 16 µs, total: 106 µs
+Wall time: 108 µs
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2
@@ -674,23 +697,24 @@ Wall time: 222 µs
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">ZeroDivisionError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Input</span> <span class="n">In</span> <span class="p">[</span><span class="mi">12</span><span class="p">],</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_1020930</span><span class="o">/</span><span class="mf">2118990485.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">divide_by</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
-<span class="nn">File ~/work/deche/deche/deche/core.py:329,</span> in <span class="ni">Cache.__call__.&lt;locals&gt;.wrapper</span><span class="nt">(*args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">327</span>     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Function </span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2"> raised </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">328</span>     <span class="bp">self</span><span class="o">.</span><span class="n">write_output</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">key</span><span class="si">}{</span><span class="n">Extensions</span><span class="o">.</span><span class="n">exception</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">329</span>     <span class="k">raise</span> <span class="n">e</span>
-<span class="g g-Whitespace">    </span><span class="mi">331</span> <span class="k">return</span> <span class="n">output</span>
+<span class="nn">~/projects/deche/deche/core.py</span> in <span class="ni">wrapper</span><span class="nt">(*args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">327</span>                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Function </span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2"> raised </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">328</span>                     <span class="bp">self</span><span class="o">.</span><span class="n">write_output</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">key</span><span class="si">}{</span><span class="n">Extensions</span><span class="o">.</span><span class="n">exception</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">329</span>                     <span class="k">raise</span> <span class="n">e</span>
+<span class="g g-Whitespace">    </span><span class="mi">330</span> 
+<span class="g g-Whitespace">    </span><span class="mi">331</span>                 <span class="k">return</span> <span class="n">output</span>
 
-<span class="nn">File ~/work/deche/deche/deche/core.py:323,</span> in <span class="ni">Cache.__call__.&lt;locals&gt;.wrapper</span><span class="nt">(*args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">321</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_input</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">322</span> <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calling </span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">323</span> <span class="n">output</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">324</span> <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Function </span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2"> ran successfully&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">325</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_output</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+<span class="nn">~/projects/deche/deche/core.py</span> in <span class="ni">wrapper</span><span class="nt">(*args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">321</span>                     <span class="bp">self</span><span class="o">.</span><span class="n">write_input</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">322</span>                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calling </span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">323</span>                     <span class="n">output</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">324</span>                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Function </span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2"> ran successfully&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">325</span>                     <span class="bp">self</span><span class="o">.</span><span class="n">write_output</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
 
-<span class="nn">Input In [7],</span> in <span class="ni">divide_by</span><span class="nt">(n)</span>
+<span class="nn">/tmp/ipykernel_1020930/121188569.py</span> in <span class="ni">divide_by</span><span class="nt">(n)</span>
 <span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="nd">@cache</span>
 <span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="k">def</span> <span class="nf">divide_by</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
 <span class="ne">----&gt; </span><span class="mi">7</span>     <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="n">n</span>
