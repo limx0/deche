@@ -15,7 +15,6 @@ from frozendict import frozendict
 from fsspec import filesystem
 
 from deche import config
-from deche.enums import CacheVersion
 from deche.inspection import args_kwargs_to_kwargs
 from deche.util import ensure_path
 from deche.util import identity
@@ -242,7 +241,7 @@ class Cache:
 
         return inner
 
-    def _load(self, func, deserializer=None, ext=None, version=CacheVersion.LATEST):
+    def _load(self, func, deserializer=None, ext=None):
         def inner(*, key=None, kwargs=None):
             assert key is not None or kwargs is not None, "Must pass key or kwargs"
             path = self._path(func)

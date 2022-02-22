@@ -1,5 +1,3 @@
-import hashlib
-import inspect
 import pathlib
 import re
 from functools import partial
@@ -31,21 +29,6 @@ def ensure_path(path):
         return defaults[path]
     p = pathlib.Path(path)
     return str(p)
-
-
-def hash_clean_source(func, length=7):
-    src = inspect.getsource(func).split("\n")
-    lines = [line.strip() for line in src if not line.startswith("@")]
-    clean_src = "\n".join(lines)
-    return hashlib.sha256(clean_src)[:length]
-
-
-def func_qualname(func):
-    if func.__module__ == "__main__":
-        # TODO add tests
-        return f"{func.__module__}/{func.__name__}-{hash_clean_source(func)}"
-    else:
-        return f"{func.__module__}/{func.__name__}"
 
 
 def identity(x):
