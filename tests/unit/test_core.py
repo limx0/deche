@@ -7,7 +7,6 @@ from unittest import mock
 import numpy as np
 import pandas as pd
 import pytest
-from frozendict import frozendict
 from fsspec.implementations.memory import MemoryFileSystem
 from s3fs import S3FileSystem
 
@@ -22,6 +21,7 @@ from deche.test_utils import func_ttl_expiry
 from deche.test_utils import func_ttl_expiry_append
 from deche.test_utils import identity
 from deche.test_utils import memory_cache
+from deche.util import frozendict
 
 
 def test_init():
@@ -89,8 +89,8 @@ def test_input_serialization(inputs, inputs_key):
     key, value = tokenize(inputs)
     assert key == inputs_key
     expected = (
-        b"\x80\x04\x95@\x00\x00\x00\x00\x00\x00\x00\x8c\x0ffrozendict.core\x94\x8c\nfrozendict\x94\x93\x94}"
-        b"\x94(\x8c\x01a\x94\x8c\x011\x94\x8c\x01b\x94K\x02\x8c\x01c\x94C\x013\x94u\x85\x94R\x94."
+        b"\x80\x04\x958\x00\x00\x00\x00\x00\x00\x00\x8c\ndeche.util\x94\x8c\nfrozendict\x94\x93\x94)\x81\x94"
+        b"(\x8c\x01a\x94\x8c\x011\x94\x8c\x01b\x94K\x02\x8c\x01c\x94C\x013\x94u."
     )
     assert value == expected
 
@@ -103,7 +103,7 @@ def test_output_serialization(c: Cache, output):
 
 def test_read_input(c: Cache):
     func(1, 2, x=5)
-    key = "ea68dd17a0216fe43359cbbc0bb814baf446fae361653b99c61a6d8026cc99a0"
+    key = "66037f0c905c6acfe47e15d35dfc6f0bf9721ebc3c92defd001192f4b88f409b"
     assert func.load_cached_inputs(key=key) == frozendict({"a": 1, "b": 2, "x": 5})
 
 
@@ -116,7 +116,7 @@ def test_write(c, path, inputs, output):
 
 def test_func_wrapper(c):
     func(1, 2, x=5)
-    key = "ea68dd17a0216fe43359cbbc0bb814baf446fae361653b99c61a6d8026cc99a0"
+    key = "66037f0c905c6acfe47e15d35dfc6f0bf9721ebc3c92defd001192f4b88f409b"
     full_path = f"/{func.__module__}.{func.__name__}/{key}"
     assert func.tokenize(1, 2, x=5) == key
     assert c.valid(path=full_path)
@@ -137,37 +137,37 @@ def test_list_cached_inputs():
     func(3, 4, zzz=10)
 
     result = func.list_cached_inputs()
-    assert result == ["9bbe6da38ae30e1f3f83a00868660b9621e9b25bcee26e1d63e917d275e5b1af"]
+    assert result == ["f4f46c47d91eea40eba825cf941ff22bdc87ce849400ed3fd85be092e43031d4"]
 
     result = func.list_cached_inputs(key_only=False)
-    assert result == ["/deche.test_utils.func/9bbe6da38ae30e1f3f83a00868660b9621e9b25bcee26e1d63e917d275e5b1af.inputs"]
+    assert result == ["/deche.test_utils.func/f4f46c47d91eea40eba825cf941ff22bdc87ce849400ed3fd85be092e43031d4.inputs"]
 
 
 def test_list_cached_data():
     func(3, 4, zzz=10)
     assert func.is_valid(3, 4, zzz=10)
     result = func.list_cached_data()
-    assert result == ["9bbe6da38ae30e1f3f83a00868660b9621e9b25bcee26e1d63e917d275e5b1af"]
+    assert result == ["f4f46c47d91eea40eba825cf941ff22bdc87ce849400ed3fd85be092e43031d4"]
 
     result = func.list_cached_data(key_only=False)
-    assert result == ["/deche.test_utils.func/9bbe6da38ae30e1f3f83a00868660b9621e9b25bcee26e1d63e917d275e5b1af"]
+    assert result == ["/deche.test_utils.func/f4f46c47d91eea40eba825cf941ff22bdc87ce849400ed3fd85be092e43031d4"]
 
 
 def test_list_cached_exceptions():
     with pytest.raises(ZeroDivisionError):
         exc_func()
     result = exc_func.list_cached_exceptions()
-    assert result == ["8de6da29b67dfb56712b6d946b689b590ceed2e37859bf380fb17fc54d8bcb05"]
+    assert result == ["6c8d328939ceaaf60d6cbe813bf07a48656647184baa590fe9b6632bfc3d7936"]
 
     result = exc_func.list_cached_exceptions(key_only=False)
-    assert result == ["/deche.test_utils.exc_func/8de6da29b67dfb56712b6d946b689b590ceed2e37859bf380fb17fc54d8bcb05.exc"]
+    assert result == ["/deche.test_utils.exc_func/6c8d328939ceaaf60d6cbe813bf07a48656647184baa590fe9b6632bfc3d7936.exc"]
 
 
 def test_iter():
     func(3, 4, zzz=10)
     result = func.iter_cached_inputs()
     assert isinstance(result, Iterable)
-    assert next(result) == "9bbe6da38ae30e1f3f83a00868660b9621e9b25bcee26e1d63e917d275e5b1af"
+    assert next(result) == "f4f46c47d91eea40eba825cf941ff22bdc87ce849400ed3fd85be092e43031d4"
 
 
 def test_load_cached_inputs():
@@ -228,7 +228,7 @@ def test_exists():
     assert func.has_data(key=func.tokenize(1, 2))
 
 
-@pytest.mark.local
+# @pytest.mark.local
 def test_cache_ttl():
     func_ttl_expiry(1, 2)
     assert func_ttl_expiry.is_valid(1, 2)
@@ -236,7 +236,7 @@ def test_cache_ttl():
     assert not func_ttl_expiry.is_valid(1, 2)
 
 
-@pytest.mark.local
+# @pytest.mark.local
 def test_cache_append(path, cached_ttl_data):
     key = func_ttl_expiry_append.tokenize(1, 2)
     full_path = f"{path}/{func_ttl_expiry_append.__module__}.{func_ttl_expiry_append.__name__}"
@@ -244,13 +244,13 @@ def test_cache_append(path, cached_ttl_data):
     assert c.fs.exists(path=f"{full_path}/{key}")
     assert c.fs.exists(path=f"{full_path}/{key}-1")
     assert c.fs.exists(path=f"{full_path}/{key}-2")
-    assert func_ttl_expiry_append.load_cached_inputs(key=key) == frozendict([("a", 1), ("b", 2)])
+    assert func_ttl_expiry_append.load_cached_inputs(key=key) == frozendict({"a": 1, "b": 2})
 
 
-@pytest.mark.local
+# @pytest.mark.local
 def test_append_iter_files(cached_ttl_data):
     keys = func_ttl_expiry_append.list_cached_data()
-    assert keys == ["fc326182c3511a7bf7b77142f4eb1526c89f3419417923f0fd70c6c229d6d62c"]
+    assert keys == ["dba23a98657fd0cf15150510055fb3ffd0ad72fa3b74e9538b6260f0123c1758"]
 
 
 def test_cache_append_path(c: Cache):
@@ -352,7 +352,7 @@ async def test_async(c: Cache):
     result1 = await async_func(1, 2)
     assert result1 == 3
     result2 = async_func.list_cached_data()
-    expected = ["3120c18b7f68050a3f222bce0bd60a84053e85b925ff9f1903d3ace60e53bad2"]
+    expected = ["be135fb1728e46edf48724c4aea2bcbbf523da81e1236862222c04e4571afe72"]
     assert result2 == expected
 
 
@@ -365,7 +365,7 @@ def test_class_attributes_cache_data(c: Cache):
 
     cls.func_a()
     cached = cls.func_a.list_cached_data()
-    assert cached == ["eb15d4f9ea9af826de550a47179c491f84b8f6028c3de97ca43df6de79287d2a"]
+    assert cached == ["9fc4ea24177b15bb7c3d7509a056b7107e37de3ff815d5e0563c4971382f0fda"]
 
 
 def test_class_attributes_correct_token(c: Cache):

@@ -3,13 +3,13 @@ import time
 from unittest.mock import patch
 
 import pytest
-from frozendict import frozendict
 
 from deche.test_utils import exc_func
 from deche.test_utils import func_ttl_expiry_append
 from deche.test_utils import mem_fs
 from deche.test_utils import memory_cache
 from deche.test_utils import path as cache_path
+from deche.util import frozendict
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -50,7 +50,7 @@ def inputs():
 
 @pytest.fixture(scope="function")
 def inputs_key():
-    return "73936aabe2480e82fe9ef81f944b70432d6c132c8fc7e2b520284c788dba15fb"
+    return "4a404f9c59a7e417729bacf5d9aae323074ec5929f08b0049975ba22284ccb5b"
 
 
 @pytest.fixture(scope="function")

@@ -1,6 +1,6 @@
 import inspect
 
-from frozendict import frozendict
+from deche.util import frozendict
 
 
 def get_func_signature(f):
