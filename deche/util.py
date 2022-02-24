@@ -5,6 +5,38 @@ from functools import update_wrapper
 from typing import Dict
 
 
+class frozendict(dict):
+
+    """
+    Taken from https://github.com/Marco-Sulla/python-frozendict/blob/master/frozendict/core.py#L10
+    """
+
+    __slots__ = ("_hash",)
+
+    def __hash__(self, *args, **kwargs):
+        r"""
+        Calculates the hash if all values are hashable, otherwise raises a
+        TypeError.
+        """
+
+        if self._hash is not None:
+            _hash = self._hash
+        else:
+            try:
+                fs = frozenset(self.items())
+            except TypeError:
+                _hash = -1
+            else:
+                _hash = hash(fs)
+
+            object.__setattr__(self, "_hash", _hash)
+
+        if _hash == -1:
+            raise TypeError("Not all values are hashable.")
+
+        return _hash
+
+
 def is_input_filename(key):
     return key.endswith(".inputs")
 

@@ -11,12 +11,12 @@ from functools import partial
 from typing import Callable, Dict, Optional, Tuple, Union
 
 import cloudpickle
-from frozendict import frozendict
 from fsspec import filesystem
 
 from deche import config
 from deche.inspection import args_kwargs_to_kwargs
 from deche.util import ensure_path
+from deche.util import frozendict
 from deche.util import identity
 from deche.util import is_class_instance
 from deche.util import is_input_filename
