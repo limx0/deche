@@ -1,8 +1,8 @@
-import collections
-from typing import OrderedDict  # noqa: TYP001
+from collections.abc import Mapping
+from typing import OrderedDict
 
 
-class FrozenDict(collections.Mapping):
+class FrozenDict(Mapping):
     """
     An immutable wrapper around dictionaries that implements the complete :py:class:`collections.Mapping`
     interface. It can be used as a drop-in replacement for dictionaries where immutability is desired.

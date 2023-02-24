@@ -37,7 +37,7 @@ def test_lazy_init():
     )
     assert isinstance(c.fs, S3FileSystem)
     assert c.fs.key == "key"
-    assert c.fs.secret == "secret"
+    assert c.fs.secret == "secret"  # noqa
     assert c.fs_protocol == "s3"
     assert c.fs_storage_options == {"key": "key", "secret": "secret"}
     assert c.prefix == "/test"
