@@ -1,6 +1,6 @@
 name: test
 
-# Test pushes and pull requests on non-master branches
+# Test pushes and pull requests on non-main branches
 
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ 3.9 ]
+        python-version: [ 3.10 ]
     name: test - Python ${{ matrix.python-version }} (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
 
