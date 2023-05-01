@@ -8,7 +8,6 @@ import numpy as np
 import pandas as pd
 import pytest
 from fsspec.implementations.memory import MemoryFileSystem
-from s3fs import S3FileSystem
 
 from deche import CacheExpiryMode
 from deche.core import Cache
@@ -35,16 +34,14 @@ def test_lazy_init():
     assert c.prefix is None
     os.environ.update(
         {
-            "DECHE_FS__PROTOCOL": "s3",
+            "DECHE_FS__PROTOCOL": "memory",
             "DECHE_FS__STORAGE_OPTIONS__KEY": "key",
             "DECHE_FS__STORAGE_OPTIONS__SECRET": "secret",
             "DECHE_FS__PREFIX": "/test",
         }
     )
-    assert isinstance(c.fs, S3FileSystem)
-    assert c.fs.key == "key"
-    assert c.fs.secret == "secret"
-    assert c.fs_protocol == "s3"
+    assert isinstance(c.fs, MemoryFileSystem)
+    assert c.fs_protocol == "memory"
     assert c.fs_storage_options == {"key": "key", "secret": "secret"}
     assert c.prefix == "/test"
 
