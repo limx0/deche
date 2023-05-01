@@ -226,7 +226,6 @@ def test_exists():
     assert func.has_data(key=func.tokenize(1, 2))
 
 
-# @pytest.mark.local
 def test_cache_ttl():
     func_ttl_expiry(1, 2)
     assert func_ttl_expiry.is_valid(1, 2)
@@ -234,18 +233,16 @@ def test_cache_ttl():
     assert not func_ttl_expiry.is_valid(1, 2)
 
 
-# @pytest.mark.local
 def test_cache_append(path, cached_ttl_data):
     key = func_ttl_expiry_append.tokenize(1, 2)
     full_path = f"{path}/{func_ttl_expiry_append.__module__}.{func_ttl_expiry_append.__name__}"
     c = Cache(fs_protocol="file", fs_storage_options={"auto_mkdir": True})
+    files = c.fs.ls(path=f"{full_path}/")
     assert c.fs.exists(path=f"{full_path}/{key}")
-    assert c.fs.exists(path=f"{full_path}/{key}-1")
-    assert c.fs.exists(path=f"{full_path}/{key}-2")
+    assert len(files) == 5
     assert func_ttl_expiry_append.load_cached_inputs(key=key) == frozendict({"a": 1, "b": 2})
 
 
-# @pytest.mark.local
 def test_append_iter_files(cached_ttl_data):
     keys = func_ttl_expiry_append.list_cached_data()
     assert keys == ["dba23a98657fd0cf15150510055fb3ffd0ad72fa3b74e9538b6260f0123c1758"]
@@ -257,12 +254,16 @@ def test_cache_append_path(c: Cache):
         return a
 
     append_func()
-    print(append_func.list_cached_data())
+    files = append_func.list_cached_data()
+    assert len(files) == 1
 
     time.sleep(1.1)
 
     append_func()
-    print(append_func.list_cached_data(key_only=False))
+    non_append_files = append_func.list_cached_data(key_only=False)
+    assert len(non_append_files) == 1
+    all_files = c.fs.glob(f"{c._path(append_func)}/*")
+    assert len(all_files) == 4
 
 
 def test_cache_path(c: Cache):

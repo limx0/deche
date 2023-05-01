@@ -5,6 +5,7 @@ import inspect
 import logging
 import pathlib
 import pickle
+import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
@@ -171,31 +172,20 @@ class Cache:
         data = self.read(path=path)
         return deserializer(data)
 
-    def _write_ttl_append(self, path: str):
-        # move any existing files
-        key = pathlib.Path(path).name
-        for f in sorted(self.fs.glob(f"{path}*"), reverse=True):
-            if is_input_filename(f):
-                continue
-            if pathlib.Path(f).name == key:
-                num = 0
-                suffix = ""
-            else:
-                num = int(f.replace(f"{path}-", ""))
-                f = f[:-2]
-                suffix = f"-{num}"
-            self.fs.mv(f"{f}{suffix}", f"{f}-{num + 1}")
-
     def write(self, path: str, data: bytes):
-        if self.cache_ttl and self.cache_expiry_mode == CacheExpiryMode.APPEND and not is_input_filename(path):
-            self._write_ttl_append(path=path)
-
         # Ensure parent exists
         parent = str(pathlib.Path(path).parent)
         if parent not in self._parents:
             if not self.fs.exists(parent):
                 self.fs.mkdir(parent)
             self._parents.add(parent)
+
+        # If cache_ttl append, write a timestamped file.
+        if self.cache_ttl and self.cache_expiry_mode == CacheExpiryMode.APPEND and not is_input_filename(path):
+            ts_us = int(time.time() * 1e6)
+            with self.fs.open(f"{path}-{ts_us}", mode="wb") as f:
+                logger.debug(f"{self.fs_protocol}://{path}-{ts_us}")
+                f.write(data)
 
         with self.fs.open(path, mode="wb") as f:
             logger.debug(f"{self.fs_protocol}://{path}")
