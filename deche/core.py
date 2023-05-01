@@ -5,16 +5,18 @@ import inspect
 import logging
 import pathlib
 import pickle
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 from functools import partial
-from typing import Callable, Dict, Optional, Tuple, Union
+from typing import Any, Optional, Union
 
 import cloudpickle
 from fsspec import filesystem
 
 from deche import config
 from deche.inspection import args_kwargs_to_kwargs
+from deche.util import ValidationError
 from deche.util import ensure_path
 from deche.util import frozendict
 from deche.util import identity
@@ -32,7 +34,7 @@ DEFAULT_SERIALIZER = partial(cloudpickle.dumps, protocol=pickle.DEFAULT_PROTOCOL
 DEFAULT_DESERIALIZER = partial(cloudpickle.loads)
 
 
-def tokenize(obj: object, serializer: Callable = DEFAULT_SERIALIZER) -> Tuple[str, bytes]:
+def tokenize(obj: object, serializer: Callable = DEFAULT_SERIALIZER) -> tuple[str, bytes]:
     value = serializer(obj)
     key = hashlib.sha256(value).hexdigest()
     return key, value
@@ -47,7 +49,7 @@ def tokenize_func(func, ignore=None, cls_attrs=None):
     return inner
 
 
-def prepare_full_kwargs(all_kwargs: Dict, ignore=None, cls_attrs=None):
+def prepare_full_kwargs(all_kwargs: dict, ignore=None, cls_attrs=None):
     all_kwargs = {k: v for k, v in all_kwargs.items() if k not in (ignore or ())}
     if is_class_instance(all_kwargs):
         # Remove self, add any cls_attrs
@@ -88,9 +90,11 @@ class Cache:
     output_deserializer: Callable = DEFAULT_DESERIALIZER
     cache_ttl: Optional[Union[datetime.timedelta, datetime.datetime, int]] = None
     cache_expiry_mode: CacheExpiryMode = CacheExpiryMode.REMOVE
-    cache_validators: Tuple[Callable] = None
-    non_hashable_kwargs: Optional[Tuple[str]] = None
-    cls_attrs: Optional[Tuple[str]] = None
+    cache_validators: tuple[Callable] = None
+    non_hashable_kwargs: Optional[tuple[str]] = None
+    cls_attrs: Optional[tuple[str]] = None
+    path_callable: Optional[Callable[[Callable, dict], str]] = None
+    result_validator: Optional[Callable[[Any], None]] = None
 
     def __post_init__(self):
         self._fs = None
@@ -134,9 +138,11 @@ class Cache:
             logger.debug(f"prefix: {self.prefix}")
             self.__post_init__()
 
-    def _path(self, func):
+    def _path(self, func, kwargs: Optional[dict] = None):
         if not self._fs:
-            self.fs
+            self.fs  # noqa - ensure fs is loaded
+        if self.path_callable is not None:
+            return self.path_callable(func, kwargs)
         path = f"{func.__module__}.{func.__name__}"
         return f"{self.prefix}/{path}" if self.prefix is not None else path
 
@@ -279,8 +285,8 @@ class Cache:
 
             @functools.wraps(func)
             async def wrapper(*args, **kwargs):
-                path = self._path(func=func)
                 all_kwargs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs)
+                path = self._path(func=func, kwargs=all_kwargs)
                 inputs = prepare_full_kwargs(
                     all_kwargs=all_kwargs, ignore=self.non_hashable_kwargs, cls_attrs=self.cls_attrs
                 )
@@ -293,6 +299,12 @@ class Cache:
                     self.write_input(path=f"{path}/{key}", inputs=inputs)
                     logger.debug(f"Calling {func}")
                     output = await func(*args, **kwargs)
+                    if self.result_validator is not None:
+                        logger.debug(f"Validating result with {self.result_validator}")
+                        try:
+                            self.result_validator(output)
+                        except Exception as e:
+                            raise ValidationError(e)
                     logger.debug(f"Function {func} ran successfully")
                     self.write_output(path=f"{path}/{key}", output=output)
                 except Exception as e:
@@ -306,8 +318,8 @@ class Cache:
 
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
-                path = self._path(func=func)
                 all_kwargs = args_kwargs_to_kwargs(func=func, args=args, kwargs=kwargs)
+                path = self._path(func=func, kwargs=all_kwargs)
                 inputs = prepare_full_kwargs(
                     all_kwargs=all_kwargs, ignore=self.non_hashable_kwargs, cls_attrs=self.cls_attrs
                 )
@@ -320,6 +332,12 @@ class Cache:
                     self.write_input(path=f"{path}/{key}", inputs=inputs)
                     logger.debug(f"Calling {func}")
                     output = func(*args, **kwargs)
+                    if self.result_validator is not None:
+                        logger.debug(f"Validating result with {self.result_validator}")
+                        try:
+                            assert self.result_validator(output) is not False
+                        except Exception as e:
+                            raise ValidationError(e)
                     logger.debug(f"Function {func} ran successfully")
                     self.write_output(path=f"{path}/{key}", output=output)
                 except Exception as e:

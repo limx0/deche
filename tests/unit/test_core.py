@@ -20,6 +20,7 @@ from deche.test_utils import func_ttl_expiry
 from deche.test_utils import func_ttl_expiry_append
 from deche.test_utils import identity
 from deche.test_utils import memory_cache
+from deche.util import ValidationError
 from deche.util import frozendict
 
 
@@ -396,3 +397,23 @@ def test_custom_serializer(c: Cache):
     assert make_dataframe.is_valid()
     df = make_dataframe()
     assert df.shape == (10, 2)
+
+
+def test_path_callable(c: Cache):
+    @c.replace(path_callable=lambda func, kwargs: "a/custom/path")
+    def func():
+        return 1
+
+    _ = func()
+    assert c.fs.exists("a/custom/path")
+
+
+def test_result_validator(c: Cache):
+    @c.replace(result_validator=lambda x: x > 5)
+    def func(n: int):
+        return n
+
+    assert func(n=6) == 6
+
+    with pytest.raises(ValidationError):
+        func(n=1)

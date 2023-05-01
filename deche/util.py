@@ -98,3 +98,7 @@ def is_class_instance(kwargs: Dict) -> bool:
         except AttributeError:
             pass
     return False
+
+
+class ValidationError(Exception):
+    pass
