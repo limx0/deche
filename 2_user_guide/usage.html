@@ -1,502 +1,435 @@
 
+
 <!DOCTYPE html>
 
-<html>
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
     <title>Usage &#8212; Deche</title>
-    
-  <link href="../_static/css/theme.css" rel="stylesheet">
-  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
-    
-  <link rel="stylesheet"
-    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    
-      
-
-    
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
-    
-  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
     <script src="../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
 const thebe_selector = ".thebe,.cell"
 const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '2_user_guide/usage';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="prev" title="Install" href="../1_getting_started/getting_started.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-    
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
 
-    <div class="container-xl">
-      <div class="row">
-          
-<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+  
+  <div class="sidebar-header-items sidebar-primary__section">
     
-        <div class="navbar-brand-box">
-    <a class="navbar-brand text-wrap" href="../index.html">
-      
-      
-      
-      <h1 class="site-logo" id="site-title">Deche</h1>
-      
-    </a>
-</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item active">
-        <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../index.html">
-   deche
-  </a>
- </li>
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">Deche</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    deche
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../1_getting_started/getting_started.html">Install</a></li>
+
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Usage</a></li>
+
 </ul>
-<ul class="current nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../1_getting_started/getting_started.html">
-   Install
-  </a>
- </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   Usage
-  </a>
- </li>
-</ul>
 
     </div>
-</nav> <!-- To handle the deprecated key -->
-
-<div class="navbar_extra_footer">
-  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
-</div>
-
-</div>
-
-
-          
-
-
-          
-<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
-    
-    <div class="topbar container-xl fixed-top">
-    <div class="topbar-contents row">
-        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
-        <div class="col pl-md-4 topbar-main">
-            
-            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-                <i class="fas fa-bars"></i>
-                <i class="fas fa-arrow-left"></i>
-                <i class="fas fa-arrow-up"></i>
-            </button>
-            
-            
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
-            class="fas fa-download"></i></button>
-
-    <div class="dropdown-buttons">
-        <!-- ipynb file if we had a myst markdown file -->
-        
-        <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../_sources/2_user_guide/usage.ipynb"><button type="button"
-                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
-                data-placement="left">.ipynb</button></a>
-        <!-- Download PDF via print -->
-        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
+</nav></div>
     </div>
-</div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
 
-            <!-- Source interaction buttons -->
 
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
-        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
-    <div class="dropdown-buttons sourcebuttons">
-        <a class="repository-button"
-            href="https://github.com/limx0/deche"><button type="button" class="btn btn-secondary topbarbtn"
-                data-toggle="tooltip" data-placement="left" title="Source repository"><i
-                    class="fab fa-github"></i>repository</button></a>
-        <a class="issues-button"
-            href="https://github.com/limx0/deche/issues/new?title=Issue%20on%20page%20%2F2_user_guide/usage.html&body=Your%20issue%20content%20here."><button
-                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
-                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+      </div>
+      
+      <main id="main-content" class="bd-main">
         
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
     </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/limx0/deche/main?urlpath=tree/docs/2_user_guide/usage.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onBinder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
 </div>
 
-            <!-- Full screen (wrap in <a> to have style consistency -->
 
-<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-        title="Fullscreen mode"><i
-            class="fas fa-expand"></i></button></a>
 
-            <!-- Launch buttons -->
 
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
-        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
-    <div class="dropdown-buttons">
-        
-        <a class="binder-button" href="https://mybinder.org/v2/gh/limx0/deche/main?urlpath=tree/docs/2_user_guide/usage.ipynb"><button type="button"
-                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
-                data-placement="left"><img class="binder-button-logo"
-                    src="../_static/images/logo_binder.svg"
-                    alt="Interact on binder">Binder</button></a>
-        
-        
-        
-        <button type="button" class="btn btn-secondary topbarbtn"
-            onclick="initThebeSBT()" title="Launch Thebe" data-toggle="tooltip" data-placement="left"><i
-                class="fas fa-play"></i><span style="margin-left: .4em;">Live Code</span></button>
-        
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/limx0/deche" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/limx0/deche/issues/new?title=Issue%20on%20page%20%2F2_user_guide/usage.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/2_user_guide/usage.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
     </div>
+  
 </div>
+</div>
+              
+              
 
-        </div>
-
-        <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Usage</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
             
-            <div class="tocsection onthispage pt-5 pb-3">
-                <i class="fas fa-list"></i> Contents
+            <div>
+                <h2> Contents </h2>
             </div>
-            <nav id="bd-toc-nav" aria-label="Page">
+            <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#">
-   Usage
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#cache-instances">
-     Cache instances
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#using-deche">
-     Using deche
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#whats-happening-under-the-hood">
-     Whats happening under the hood?
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#features">
-   Features
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#return-values-including-exceptions-are-cached">
-     Return values (including exceptions) are cached
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#view-cached-kwargs-data-exceptions-via-list-cached">
-     View cached kwargs/data/exceptions via
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       .list_cached_*
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#retrieve-values-from-the-cache-via-key-or-kwargs">
-     Retrieve values from the cache via
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       key=
-      </span>
-     </code>
-     or
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       kwargs=
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#easily-create-multiple-instances-of-cache-via-replace">
-     Easily create multiple instances of
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Cache
-      </span>
-     </code>
-     via
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       replace
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#cache-entries-can-be-valid-for-certain-period-of-time-via-cache-ttl">
-     Cache entries can be valid for certain period of time via
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       cache_ttl
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#cache-entries-can-overwrite-or-append-via-cache-expiry-mode">
-     Cache entries can overwrite or append via
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       cache_expiry_mode
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#persist-kwargs-and-return-values-in-any-format-via-input-serializer-input-deserializer-output-serializer-output-deserializer">
-     Persist kwargs and return values in any format via
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       input_serializer/input_deserializer
-      </span>
-     </code>
-     ,
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       output_serializer/output_deserializer
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#ignore-certain-kwargs-via-non-hashable-kwargs">
-     Ignore certain kwargs via
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       non_hashable_kwargs
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#cache-class-methods-alongside-attributes">
-     Cache class methods alongside attributes
-    </a>
-   </li>
-  </ul>
- </li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Usage</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cache-instances">Cache instances</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-deche">Using deche</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#whats-happening-under-the-hood">Whats happening under the hood?</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#features">Features</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#return-values-including-exceptions-are-cached">Return values (including exceptions) are cached</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#view-cached-kwargs-data-exceptions-via-list-cached">View cached kwargs/data/exceptions via <code class="docutils literal notranslate"><span class="pre">.list_cached_*</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#retrieve-values-from-the-cache-via-key-or-kwargs">Retrieve values from the cache via <code class="docutils literal notranslate"><span class="pre">key=</span></code> or <code class="docutils literal notranslate"><span class="pre">kwargs=</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#easily-create-multiple-instances-of-cache-via-replace">Easily create multiple instances of <code class="docutils literal notranslate"><span class="pre">Cache</span></code> via <code class="docutils literal notranslate"><span class="pre">replace</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cache-entries-can-be-valid-for-certain-period-of-time-via-cache-ttl">Cache entries can be valid for certain period of time via <code class="docutils literal notranslate"><span class="pre">cache_ttl</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cache-entries-can-overwrite-or-append-via-cache-expiry-mode">Cache entries can overwrite or append via <code class="docutils literal notranslate"><span class="pre">cache_expiry_mode</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#persist-kwargs-and-return-values-in-any-format-via-input-serializer-input-deserializer-output-serializer-output-deserializer">Persist kwargs and return values in any format via <code class="docutils literal notranslate"><span class="pre">input_serializer/input_deserializer</span></code>, <code class="docutils literal notranslate"><span class="pre">output_serializer/output_deserializer</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ignore-certain-kwargs-via-non-hashable-kwargs">Ignore certain kwargs via <code class="docutils literal notranslate"><span class="pre">non_hashable_kwargs</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cache-class-methods-alongside-attributes">Cache class methods alongside attributes</a></li>
+</ul>
+</li>
 </ul>
 
             </nav>
         </div>
     </div>
 </div>
-    <div id="main-content" class="row">
-        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-            <!-- Table of contents that is only displayed when printing the page -->
-            <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Usage</h1>
-                <!-- Table of contents -->
-                <div id="print-main-content">
-                    <div id="jb-print-toc">
-                        
-                        <div>
-                            <h2> Contents </h2>
-                        </div>
-                        <nav aria-label="Page">
-                            <ul class="visible nav section-nav flex-column">
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#">
-   Usage
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#cache-instances">
-     Cache instances
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#using-deche">
-     Using deche
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#whats-happening-under-the-hood">
-     Whats happening under the hood?
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#features">
-   Features
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#return-values-including-exceptions-are-cached">
-     Return values (including exceptions) are cached
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#view-cached-kwargs-data-exceptions-via-list-cached">
-     View cached kwargs/data/exceptions via
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       .list_cached_*
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#retrieve-values-from-the-cache-via-key-or-kwargs">
-     Retrieve values from the cache via
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       key=
-      </span>
-     </code>
-     or
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       kwargs=
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#easily-create-multiple-instances-of-cache-via-replace">
-     Easily create multiple instances of
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Cache
-      </span>
-     </code>
-     via
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       replace
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#cache-entries-can-be-valid-for-certain-period-of-time-via-cache-ttl">
-     Cache entries can be valid for certain period of time via
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       cache_ttl
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#cache-entries-can-overwrite-or-append-via-cache-expiry-mode">
-     Cache entries can overwrite or append via
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       cache_expiry_mode
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#persist-kwargs-and-return-values-in-any-format-via-input-serializer-input-deserializer-output-serializer-output-deserializer">
-     Persist kwargs and return values in any format via
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       input_serializer/input_deserializer
-      </span>
-     </code>
-     ,
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       output_serializer/output_deserializer
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#ignore-certain-kwargs-via-non-hashable-kwargs">
-     Ignore certain kwargs via
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       non_hashable_kwargs
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#cache-class-methods-alongside-attributes">
-     Cache class methods alongside attributes
-    </a>
-   </li>
-  </ul>
- </li>
-</ul>
 
-                        </nav>
-                    </div>
-                </div>
-            </div>
-            
-              <div>
+              
                 
-  <div class="tex2jax_ignore mathjax_ignore section" id="usage">
-<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="cache-instances">
-<h2>Cache instances<a class="headerlink" href="#cache-instances" title="Permalink to this headline">¶</a></h2>
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">#</a></h1>
+<section id="cache-instances">
+<h2>Cache instances<a class="headerlink" href="#cache-instances" title="Permalink to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">deche</span></code> is built on top of the excellent <a class="reference external" href="https://github.com/fsspec/filesystem_spec">fsspec</a> library, which means it can be used with any backends supported by <code class="docutils literal notranslate"><span class="pre">fsspec</span></code>, such as <code class="docutils literal notranslate"><span class="pre">memory</span></code>, <code class="docutils literal notranslate"><span class="pre">local</span></code>, <code class="docutils literal notranslate"><span class="pre">s3</span></code> among many others.</p>
 <p>Simply pass</p>
 <div class="cell docutils container">
@@ -508,9 +441,9 @@ const thebe_selector_output = ".output, .cell_output"
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="using-deche">
-<h2>Using deche<a class="headerlink" href="#using-deche" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="using-deche">
+<h2>Using deche<a class="headerlink" href="#using-deche" title="Permalink to this heading">#</a></h2>
 <p>Let’s create some simple functions simulating some work, and wrap them in our <code class="docutils literal notranslate"><span class="pre">cache</span></code> decorator</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -537,7 +470,7 @@ const thebe_selector_output = ".output, .cell_output"
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1.93 ms, sys: 267 µs, total: 2.19 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1.35 ms, sys: 103 µs, total: 1.46 ms
 Wall time: 1 s
 </pre></div>
 </div>
@@ -553,8 +486,8 @@ Wall time: 1 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 208 µs, sys: 28 µs, total: 236 µs
-Wall time: 242 µs
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 191 µs, sys: 14 µs, total: 205 µs
+Wall time: 211 µs
 </pre></div>
 </div>
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2
@@ -574,9 +507,9 @@ Wall time: 242 µs
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="whats-happening-under-the-hood">
-<h2>Whats happening under the hood?<a class="headerlink" href="#whats-happening-under-the-hood" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="whats-happening-under-the-hood">
+<h2>Whats happening under the hood?<a class="headerlink" href="#whats-happening-under-the-hood" title="Permalink to this heading">#</a></h2>
 <p>deche computes a hash <code class="docutils literal notranslate"><span class="pre">key</span></code> from the fully qualified kwargs to your function, and when the function is called, it saves the <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>, the <code class="docutils literal notranslate"><span class="pre">return</span> <span class="pre">value</span></code> (actual object or exception!) to a location specified by the Cache instance.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -598,12 +531,12 @@ Wall time: 242 µs
 </div>
 </div>
 </div>
-</div>
-</div>
-<div class="tex2jax_ignore mathjax_ignore section" id="features">
-<h1>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="return-values-including-exceptions-are-cached">
-<h2>Return values (including exceptions) are cached<a class="headerlink" href="#return-values-including-exceptions-are-cached" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="features">
+<h1>Features<a class="headerlink" href="#features" title="Permalink to this heading">#</a></h1>
+<section id="return-values-including-exceptions-are-cached">
+<h2>Return values (including exceptions) are cached<a class="headerlink" href="#return-values-including-exceptions-are-cached" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nd">@cache</span>
@@ -674,7 +607,7 @@ Wall time: 242 µs
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">ZeroDivisionError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Input</span> <span class="n">In</span> <span class="p">[</span><span class="mi">12</span><span class="p">],</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">12</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
 <span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">divide_by</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="nn">File ~/work/deche/deche/deche/core.py:328,</span> in <span class="ni">Cache.__call__.&lt;locals&gt;.wrapper</span><span class="nt">(*args, **kwargs)</span>
@@ -690,7 +623,7 @@ Wall time: 242 µs
 <span class="g g-Whitespace">    </span><span class="mi">323</span> <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Function </span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2"> ran successfully&quot;</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">324</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_output</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
 
-<span class="nn">Input In [7],</span> in <span class="ni">divide_by</span><span class="nt">(n)</span>
+<span class="nn">Cell In[7], line 7,</span> in <span class="ni">divide_by</span><span class="nt">(n)</span>
 <span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="nd">@cache</span>
 <span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="k">def</span> <span class="nf">divide_by</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
 <span class="ne">----&gt; </span><span class="mi">7</span>     <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="n">n</span>
@@ -737,9 +670,9 @@ Wall time: 242 µs
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="view-cached-kwargs-data-exceptions-via-list-cached">
-<h2>View cached kwargs/data/exceptions via <code class="docutils literal notranslate"><span class="pre">.list_cached_*</span></code><a class="headerlink" href="#view-cached-kwargs-data-exceptions-via-list-cached" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="view-cached-kwargs-data-exceptions-via-list-cached">
+<h2>View cached kwargs/data/exceptions via <code class="docutils literal notranslate"><span class="pre">.list_cached_*</span></code><a class="headerlink" href="#view-cached-kwargs-data-exceptions-via-list-cached" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">func</span><span class="o">.</span><span class="n">list_cached_data</span><span class="p">()</span>
@@ -764,9 +697,9 @@ Wall time: 242 µs
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="retrieve-values-from-the-cache-via-key-or-kwargs">
-<h2>Retrieve values from the cache via <code class="docutils literal notranslate"><span class="pre">key=</span></code> or <code class="docutils literal notranslate"><span class="pre">kwargs=</span></code><a class="headerlink" href="#retrieve-values-from-the-cache-via-key-or-kwargs" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="retrieve-values-from-the-cache-via-key-or-kwargs">
+<h2>Retrieve values from the cache via <code class="docutils literal notranslate"><span class="pre">key=</span></code> or <code class="docutils literal notranslate"><span class="pre">kwargs=</span></code><a class="headerlink" href="#retrieve-values-from-the-cache-via-key-or-kwargs" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">divide_by</span><span class="o">.</span><span class="n">load_cached_inputs</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;4a19b9cb964e5c15171025cb0a657a269d5e20087c41fc7b967c3928d602e14a&quot;</span><span class="p">)</span>
@@ -791,9 +724,9 @@ Wall time: 242 µs
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="easily-create-multiple-instances-of-cache-via-replace">
-<h2>Easily create multiple instances of <code class="docutils literal notranslate"><span class="pre">Cache</span></code> via <code class="docutils literal notranslate"><span class="pre">replace</span></code><a class="headerlink" href="#easily-create-multiple-instances-of-cache-via-replace" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="easily-create-multiple-instances-of-cache-via-replace">
+<h2>Easily create multiple instances of <code class="docutils literal notranslate"><span class="pre">Cache</span></code> via <code class="docutils literal notranslate"><span class="pre">replace</span></code><a class="headerlink" href="#easily-create-multiple-instances-of-cache-via-replace" title="Permalink to this heading">#</a></h2>
 <p>Having different config for different functions is simple, just create a new instance via <code class="docutils literal notranslate"><span class="pre">replace</span></code>. Typically usage is to create one “base” cache instance and use <code class="docutils literal notranslate"><span class="pre">replace</span></code> for actual functions:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -808,9 +741,9 @@ Wall time: 242 µs
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="cache-entries-can-be-valid-for-certain-period-of-time-via-cache-ttl">
-<h2>Cache entries can be valid for certain period of time via <code class="docutils literal notranslate"><span class="pre">cache_ttl</span></code><a class="headerlink" href="#cache-entries-can-be-valid-for-certain-period-of-time-via-cache-ttl" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="cache-entries-can-be-valid-for-certain-period-of-time-via-cache-ttl">
+<h2>Cache entries can be valid for certain period of time via <code class="docutils literal notranslate"><span class="pre">cache_ttl</span></code><a class="headerlink" href="#cache-entries-can-be-valid-for-certain-period-of-time-via-cache-ttl" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span>
@@ -856,9 +789,9 @@ Wall time: 242 µs
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="cache-entries-can-overwrite-or-append-via-cache-expiry-mode">
-<h2>Cache entries can overwrite or append via <code class="docutils literal notranslate"><span class="pre">cache_expiry_mode</span></code><a class="headerlink" href="#cache-entries-can-overwrite-or-append-via-cache-expiry-mode" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="cache-entries-can-overwrite-or-append-via-cache-expiry-mode">
+<h2>Cache entries can overwrite or append via <code class="docutils literal notranslate"><span class="pre">cache_expiry_mode</span></code><a class="headerlink" href="#cache-entries-can-overwrite-or-append-via-cache-expiry-mode" title="Permalink to this heading">#</a></h2>
 <p><em>NB: reading of appended data not gracefully supported yet</em></p>
 <p>On occassion, you may want to cache something for some period using <code class="docutils literal notranslate"><span class="pre">cache_ttl</span></code>,  but continue caching versions of that data periodically - for example saving a webpage once weekly.</p>
 <p>For this purpose you can use <code class="docutils literal notranslate"><span class="pre">cache_expiry_mode=CacheExpiryMode.APPEND</span></code> which will simply create new keys with an increment each time the function is rerun after the ttl period.</p>
@@ -909,9 +842,9 @@ Wall time: 242 µs
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="persist-kwargs-and-return-values-in-any-format-via-input-serializer-input-deserializer-output-serializer-output-deserializer">
-<h2>Persist kwargs and return values in any format via <code class="docutils literal notranslate"><span class="pre">input_serializer/input_deserializer</span></code>, <code class="docutils literal notranslate"><span class="pre">output_serializer/output_deserializer</span></code><a class="headerlink" href="#persist-kwargs-and-return-values-in-any-format-via-input-serializer-input-deserializer-output-serializer-output-deserializer" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="persist-kwargs-and-return-values-in-any-format-via-input-serializer-input-deserializer-output-serializer-output-deserializer">
+<h2>Persist kwargs and return values in any format via <code class="docutils literal notranslate"><span class="pre">input_serializer/input_deserializer</span></code>, <code class="docutils literal notranslate"><span class="pre">output_serializer/output_deserializer</span></code><a class="headerlink" href="#persist-kwargs-and-return-values-in-any-format-via-input-serializer-input-deserializer-output-serializer-output-deserializer" title="Permalink to this heading">#</a></h2>
 <p>The default serializer for deche is <code class="docutils literal notranslate"><span class="pre">pickle</span></code> which works well in some cases with stable environments, but eventually it will make more sense to persist data via a better format, such a JSON for simple object or parquet for pandas DataFrames.</p>
 <p>This can be accomplied via the <code class="docutils literal notranslate"><span class="pre">input_serializer/input_deserializer</span></code>, <code class="docutils literal notranslate"><span class="pre">output_serializer/output_deserializer</span></code> kwargs.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
@@ -931,9 +864,9 @@ Wall time: 242 µs
 
 </pre></div>
 </div>
-</div>
-<div class="section" id="ignore-certain-kwargs-via-non-hashable-kwargs">
-<h2>Ignore certain kwargs via <code class="docutils literal notranslate"><span class="pre">non_hashable_kwargs</span></code><a class="headerlink" href="#ignore-certain-kwargs-via-non-hashable-kwargs" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="ignore-certain-kwargs-via-non-hashable-kwargs">
+<h2>Ignore certain kwargs via <code class="docutils literal notranslate"><span class="pre">non_hashable_kwargs</span></code><a class="headerlink" href="#ignore-certain-kwargs-via-non-hashable-kwargs" title="Permalink to this heading">#</a></h2>
 <p>If some of your arguments are non-hashable objects or arguments that do not determine the return value of the function, they can be ignore in the computing of the hash via <code class="docutils literal notranslate"><span class="pre">non_hashable_kwargs</span></code>.</p>
 <p>Be careful not to do this if they <em>do determine</em> the result, as collisions will occur (a collison is where two different results share the same key/token and overwrite each other)</p>
 <div class="cell docutils container">
@@ -985,9 +918,9 @@ Wall time: 242 µs
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="cache-class-methods-alongside-attributes">
-<h2>Cache class methods alongside attributes<a class="headerlink" href="#cache-class-methods-alongside-attributes" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="cache-class-methods-alongside-attributes">
+<h2>Cache class methods alongside attributes<a class="headerlink" href="#cache-class-methods-alongside-attributes" title="Permalink to this heading">#</a></h2>
 <p><em>This is experimental and not well tested - please raise any issues on <a class="reference external" href="https://github.com/limx0/deche">github</a></em></p>
 <p>Class methods can also be cached. They ignore the class instance <code class="docutils literal notranslate"><span class="pre">self</span></code> by default as the hash of this object changes, but can be used with other attributes:</p>
 <div class="cell docutils container">
@@ -1048,8 +981,8 @@ Wall time: 242 µs
 </div>
 </div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
     <script type="text/x-thebe-config">
     {
@@ -1063,7 +996,7 @@ Wall time: 242 µs
             mode: "deche"
         },
         kernelOptions: {
-            kernelName: "deche",
+            name: "deche",
             path: "./2_user_guide"
         },
         predefinedOutput: true
@@ -1071,37 +1004,114 @@ Wall time: 242 µs
     </script>
     <script>kernelName = 'deche'</script>
 
-              </div>
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../1_getting_started/getting_started.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Install</p>
+      </div>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Usage</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cache-instances">Cache instances</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-deche">Using deche</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#whats-happening-under-the-hood">Whats happening under the hood?</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#features">Features</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#return-values-including-exceptions-are-cached">Return values (including exceptions) are cached</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#view-cached-kwargs-data-exceptions-via-list-cached">View cached kwargs/data/exceptions via <code class="docutils literal notranslate"><span class="pre">.list_cached_*</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#retrieve-values-from-the-cache-via-key-or-kwargs">Retrieve values from the cache via <code class="docutils literal notranslate"><span class="pre">key=</span></code> or <code class="docutils literal notranslate"><span class="pre">kwargs=</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#easily-create-multiple-instances-of-cache-via-replace">Easily create multiple instances of <code class="docutils literal notranslate"><span class="pre">Cache</span></code> via <code class="docutils literal notranslate"><span class="pre">replace</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cache-entries-can-be-valid-for-certain-period-of-time-via-cache-ttl">Cache entries can be valid for certain period of time via <code class="docutils literal notranslate"><span class="pre">cache_ttl</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cache-entries-can-overwrite-or-append-via-cache-expiry-mode">Cache entries can overwrite or append via <code class="docutils literal notranslate"><span class="pre">cache_expiry_mode</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#persist-kwargs-and-return-values-in-any-format-via-input-serializer-input-deserializer-output-serializer-output-deserializer">Persist kwargs and return values in any format via <code class="docutils literal notranslate"><span class="pre">input_serializer/input_deserializer</span></code>, <code class="docutils literal notranslate"><span class="pre">output_serializer/output_deserializer</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ignore-certain-kwargs-via-non-hashable-kwargs">Ignore certain kwargs via <code class="docutils literal notranslate"><span class="pre">non_hashable_kwargs</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cache-class-methods-alongside-attributes">Cache class methods alongside attributes</a></li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
               
             
-                <!-- Previous / next buttons -->
-<div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="../1_getting_started/getting_started.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Install</p>
-        </div>
-    </a>
-</div>
+          </div>
+          <footer class="bd-footer-content">
             
-        </div>
-    </div>
-    <footer class="footer">
-  <p>
-    
-      By limx0<br/>
-    
-        &copy; Copyright 2021.<br/>
-  </p>
-</footer>
-</main>
-
-
-      </div>
-    </div>
+<div class="bd-footer-content__inner container">
   
-  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+  <div class="footer-item">
+    
+<p class="component-author">
+By limx0
+</p>
 
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
   </body>
 </html>
