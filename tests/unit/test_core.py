@@ -152,14 +152,14 @@ def test_list_cached_data():
     assert result == ["/deche.test_utils.func/f4f46c47d91eea40eba825cf941ff22bdc87ce849400ed3fd85be092e43031d4"]
 
 
-def test_list_cached_exceptions():
-    with pytest.raises(ZeroDivisionError):
-        exc_func()
-    result = exc_func.list_cached_exceptions()
-    assert result == ["6c8d328939ceaaf60d6cbe813bf07a48656647184baa590fe9b6632bfc3d7936"]
+# def test_list_cached_exceptions():
+#     with pytest.raises(ZeroDivisionError):
+#         exc_func()
+#     result = exc_func.list_cached_exceptions()
+#     assert result == ["6c8d328939ceaaf60d6cbe813bf07a48656647184baa590fe9b6632bfc3d7936"]
 
-    result = exc_func.list_cached_exceptions(key_only=False)
-    assert result == ["/deche.test_utils.exc_func/6c8d328939ceaaf60d6cbe813bf07a48656647184baa590fe9b6632bfc3d7936.exc"]
+#     result = exc_func.list_cached_exceptions(key_only=False)
+#     assert result == ["/deche.test_utils.exc_func/6c8d328939ceaaf60d6cbe813bf07a48656647184baa590fe9b6632bfc3d7936.exc"]
 
 
 def test_iter():
@@ -194,31 +194,31 @@ def test_load_cached_data():
     assert result == expected
 
 
-def test_load_cached_exception():
-    try:
-        exc_func()
-    except ZeroDivisionError as expected:
-        result = exc_func.load_cached_exception(kwargs={})
-        assert isinstance(result, type(expected))
-        assert type(expected) == type(result)
+# def test_load_cached_exception():
+#     try:
+#         exc_func()
+#     except ZeroDivisionError as expected:
+#         result = exc_func.load_cached_exception(kwargs={})
+#         assert isinstance(result, type(expected))
+#         assert type(expected) == type(result)
 
-        key = exc_func.tokenize()
-        result = exc_func.load_cached_exception(key=key)
-        assert isinstance(result, type(expected))
+#         key = exc_func.tokenize()
+#         result = exc_func.load_cached_exception(key=key)
+#         assert isinstance(result, type(expected))
 
 
-def test_remove_all_exceptions():
-    try:
-        exc_func(1)
-    except ZeroDivisionError:
-        pass
-    try:
-        exc_func(2)
-    except ZeroDivisionError:
-        pass
-    assert len(exc_func.list_cached_exceptions()) == 2
-    exc_func.remove_all_cached_exceptions()
-    assert len(exc_func.list_cached_exceptions()) == 0
+# def test_remove_all_exceptions():
+#     try:
+#         exc_func(1)
+#     except ZeroDivisionError:
+#         pass
+#     try:
+#         exc_func(2)
+#     except ZeroDivisionError:
+#         pass
+#     assert len(exc_func.list_cached_exceptions()) == 2
+#     exc_func.remove_all_cached_exceptions()
+#     assert len(exc_func.list_cached_exceptions()) == 0
 
 
 def test_exists():
@@ -272,12 +272,12 @@ def test_cache_path(c: Cache):
     assert func.path() == "/deche.test_utils.func"
 
 
-def test_cache_exception(c: Cache):
-    try:
-        exc_func()
-    except ZeroDivisionError as e:
-        exc = exc_func.load_cached_exception(kwargs={})
-        assert type(exc) == type(e)
+# def test_cache_exception(c: Cache):
+#     try:
+#         exc_func()
+#     except ZeroDivisionError as e:
+#         exc = exc_func.load_cached_exception(kwargs={})
+#         assert type(exc) == type(e)
 
 
 def test_cached_exception_raises(cached_exception):

@@ -250,10 +250,7 @@ class Cache:
 
         return inner
 
-    def __call__(self, func):  # noqa: C901
-        # TODO - very lazy async support. Refactor
-        # TODO - fsspec also has async support - could make exists/load calls async
-
+    def __call__(self, func):
         if inspect.iscoroutinefunction(func):
 
             @functools.wraps(func)
@@ -266,25 +263,17 @@ class Cache:
                 key, _ = tokenize(obj=inputs)
                 if self.valid(path=f"{path}/{key}"):
                     return self._load(func=func)(key=key)
-                elif self._exists(func=func, ext=Extensions.exception)(key=key):
-                    raise self._load(func=func, ext=Extensions.exception)(key=key)
-                try:
-                    self.write_input(path=f"{path}/{key}", inputs=inputs)
-                    logger.debug(f"Calling {func}")
-                    output = await func(*args, **kwargs)
-                    if self.result_validator is not None:
-                        logger.debug(f"Validating result with {self.result_validator}")
-                        try:
-                            self.result_validator(output)
-                        except Exception as e:
-                            raise ValidationError(e)
-                    logger.debug(f"Function {func} ran successfully")
-                    self.write_output(path=f"{path}/{key}", output=output)
-                except Exception as e:
-                    logger.debug(f"Function {func} raised {e}")
-                    self.write_output(path=f"{path}/{key}{Extensions.exception}", output=e)
-                    raise e
-
+                self.write_input(path=f"{path}/{key}", inputs=inputs)
+                logger.debug(f"Calling {func}")
+                output = await func(*args, **kwargs)
+                if self.result_validator is not None:
+                    logger.debug(f"Validating result with {self.result_validator}")
+                    try:
+                        self.result_validator(output)
+                    except Exception as e:
+                        raise ValidationError(e)
+                logger.debug(f"Function {func} ran successfully")
+                self.write_output(path=f"{path}/{key}", output=output)
                 return output
 
         else:
@@ -299,25 +288,17 @@ class Cache:
                 key, _ = tokenize(obj=inputs)
                 if self.valid(path=f"{path}/{key}"):
                     return self._load(func=func)(key=key)
-                elif self._exists(func=func, ext=Extensions.exception)(key=key):
-                    raise self._load(func=func, ext=Extensions.exception)(key=key)
-                try:
-                    self.write_input(path=f"{path}/{key}", inputs=inputs)
-                    logger.debug(f"Calling {func}")
-                    output = func(*args, **kwargs)
-                    if self.result_validator is not None:
-                        logger.debug(f"Validating result with {self.result_validator}")
-                        try:
-                            assert self.result_validator(output) is not False
-                        except Exception as e:
-                            raise ValidationError(e)
-                    logger.debug(f"Function {func} ran successfully")
-                    self.write_output(path=f"{path}/{key}", output=output)
-                except Exception as e:
-                    logger.debug(f"Function {func} raised {e}")
-                    self.write_output(path=f"{path}/{key}{Extensions.exception}", output=e)
-                    raise e
-
+                self.write_input(path=f"{path}/{key}", inputs=inputs)
+                logger.debug(f"Calling {func}")
+                output = func(*args, **kwargs)
+                if self.result_validator is not None:
+                    logger.debug(f"Validating result with {self.result_validator}")
+                    try:
+                        assert self.result_validator(output) is not False
+                    except Exception as e:
+                        raise ValidationError(e)
+                logger.debug(f"Function {func} ran successfully")
+                self.write_output(path=f"{path}/{key}", output=output)
                 return output
 
         wrapper.tokenize = tokenize_func(func=func, ignore=self.non_hashable_kwargs, cls_attrs=self.cls_attrs)
@@ -326,20 +307,14 @@ class Cache:
         wrapper.is_valid = self.is_valid(func=wrapper)
         wrapper.has_inputs = self._exists(func=wrapper, ext=Extensions.inputs)
         wrapper.has_data = self._exists(func=wrapper)
-        wrapper.has_exception = self._exists(func=wrapper, ext=Extensions.exception)
         wrapper.list_cached_inputs = self._list(func=wrapper, ext=Extensions.inputs)
         wrapper.list_cached_data = self._list(func=wrapper, filter_=data_filter)
-        wrapper.list_cached_exceptions = self._list(func=wrapper, ext=Extensions.exception)
         wrapper.iter_cached_inputs = self._iter(func=wrapper, ext=Extensions.inputs)
         wrapper.iter_cached_data = self._iter(func=wrapper, filter_=data_filter)
-        wrapper.iter_cached_exception = self._iter(func=wrapper, ext=Extensions.exception)
         wrapper.load_cached_inputs = self._load(func=wrapper, ext=Extensions.inputs)
         wrapper.load_cached_data = self._load(func=wrapper)
-        wrapper.load_cached_exception = self._load(func=wrapper, ext=Extensions.exception)
         wrapper.remove_cached_inputs = self._remove(func=wrapper, ext=Extensions.inputs)
         wrapper.remove_cached_data = self._remove(func=wrapper)
-        wrapper.remove_cached_exception = self._remove(func=wrapper, ext=Extensions.exception)
-        wrapper.remove_all_cached_exceptions = self._remove_all(func=wrapper, ext=Extensions.exception)
         wrapper.path = functools.partial(self._path, func=func)
         wrapper.deche = self
         return wrapper
